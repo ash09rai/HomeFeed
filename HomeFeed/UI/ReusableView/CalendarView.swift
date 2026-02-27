@@ -1,0 +1,44 @@
+//
+//  CalendarView.swift
+//  HomeFeed
+//
+//  Created by Ashish Rai on 27/02/26.
+//
+
+import SwiftUI
+
+struct CalendarView: View {
+    var body: some View {
+        ZStack {
+            Color(red: 0, green: 40/255, blue: 105/255)
+            calendarView
+                .overlay(
+                    RoundedRectangle(cornerRadius: 6)
+                        .stroke(.white, lineWidth: 1)
+                )
+        }
+        .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+    }
+    
+    
+    var calendarView: some View {
+        VStack {
+            Text("Jan")
+                .font(SystemDesign.font(SystemDesign.Typography.caption))
+                .foregroundStyle(Color.white)
+            Text("8-12")
+                .font(SystemDesign.font(SystemDesign.Typography.cardTitle))
+                .foregroundStyle(Color.white)
+        }
+        .frame(width: 58, height: 58, alignment: .center)
+        .background(Color(red: 0, green: 40/255, blue: 105/255))
+    }
+}
+
+struct CalendarView_Previews: PreviewProvider {
+    static var previews: some View {
+        CalendarView()
+            .frame(width: 70, height: 70)
+            .previewLayout(.sizeThatFits)
+    }
+}

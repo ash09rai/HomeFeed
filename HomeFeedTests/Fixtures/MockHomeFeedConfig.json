@@ -1,0 +1,81 @@
+[
+  {
+    "rank": 1,
+    "section_type": "last_activity",
+    "endpoint": "/mobile/v4/last-activity?version=V4&type=mobile",
+    "header": { "title": "Your Activity" },
+    "supportedContents": ["WEBINAR", "DOCUMENT", "VIDEO", "AUDIO"],
+    "theme": { "backgroundColor": "#FFFFFF" },
+    "analytics": "last_activity",
+    "showSection": true,
+    "groupCount": 1,
+    "cardCount": 10,
+    "sectionHeaderCta": { "title": "See all" },
+    "behaviour": {
+      "parameter": "rank",
+      "updatedValue": "999",
+      "action": "VIEWED"
+    },
+    "containers": [
+      {
+        "layout": "HORIZONTAL_LIST",
+        "cardtype": "COMPACT_HEIGHT_CARD",
+        "showImage": false,
+        "cardCount": 10,
+        "imagePaginationEnabled": false,
+        "scrollDirection": "HORIZONTAL"
+      }
+    ]
+  },
+  {
+    "rank": 3,
+    "section_type": "unsupported_layout",
+    "endpoint": "/mobile/v4/unsupported-layout",
+    "supportedContents": ["VIDEO"],
+    "showSection": true,
+    "containers": [
+      {
+        "layout": "GRID",
+        "cardType": "STANDARD_CARD",
+        "showImage": true,
+        "cardCount": 4,
+        "imagePaginationEnabled": false,
+        "scrollDirection": "VERTICAL"
+      }
+    ]
+  },
+  {
+    "rank": 2,
+    "section_type": "recommended",
+    "endpoint": "/mobile/v4/recommended",
+    "supportedContents": ["VIDEO", "UNKNOWN_TYPE"],
+    "showSection": true,
+    "containers": [
+      {
+        "layout": "VERTICAL_LIST",
+        "cardType": "STANDARD_CARD",
+        "showImage": true,
+        "cardCount": 4,
+        "imagePaginationEnabled": false,
+        "scrollDirection": "VERTICAL"
+      }
+    ]
+  },
+  {
+    "rank": 4,
+    "section_type": "hidden",
+    "endpoint": "/mobile/v4/hidden",
+    "supportedContents": ["VIDEO"],
+    "showSection": false,
+    "containers": [
+      {
+        "layout": "VERTICAL_LIST",
+        "cardType": "STANDARD_CARD",
+        "showImage": true,
+        "cardCount": 4,
+        "imagePaginationEnabled": false,
+        "scrollDirection": "VERTICAL"
+      }
+    ]
+  }
+]

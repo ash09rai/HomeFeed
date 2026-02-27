@@ -1,0 +1,233 @@
+[
+  {
+    "rank": 1,
+    "section_type": "last_activity",
+    "endpoint": "/mobile/v4/last-activity?version=V4&type=mobile",
+    "header": {
+      "title": "Continue with",
+      "subtitle": "",
+      "titleColor": "#5A5B66",
+      "subtitleColor": null
+    },
+    "supportedContents": [
+      "WEBINAR",
+      "DOCUMENT",
+      "VIDEO",
+      "AUDIO"
+    ],
+    "theme": {
+      "backgroundImage": null,
+      "primaryColor": "#E0F1FF",
+      "secondaryColor": "#E0F1FF"
+    },
+    "analytics": "last_activity",
+    "showSection": true,
+    "groupCount": 1,
+    "cardCount": 10,
+    "sectionHeaderCta": {
+      "actionType": "navigate",
+      "actionName": "past_activity",
+      "text": "View More",
+      "position": "right"
+    },
+    "footerCta": null,
+    "containers": [
+      {
+        "layout": "HORIZONTAL_LIST",
+        "cardType": "COMPACT_HEIGHT_CARD",
+        "showImage": false,
+        "cardCount": 10,
+        "imagePaginationEnabled": false
+      }
+    ]
+  },
+  {
+    "rank": 2,
+    "section_type": "recommended_for_you",
+    "endpoint": "/mobile/v2/recommendation?version=V3&type=mobile",
+    "header": {
+      "title": "Recommended for You",
+      "subtitle": "",
+      "titleColor": "#000000",
+      "subtitleColor": "#000000"
+    },
+    "supportedContents": [
+      "WEBINAR",
+      "DOCUMENT"
+    ],
+    "theme": {
+      "backgroundImage": null,
+      "primaryColor": "#000000",
+      "secondaryColor": "#000000"
+    },
+    "analytics": "recommended",
+    "showSection": true,
+    "groupCount": 1,
+    "cardCount": 7,
+    "sectionHeaderCta": null,
+    "sectionFooterCta": null,
+    "containers": [
+      {
+        "layout": "VERTICAL_LIST",
+        "cardType": "BIG_CARD",
+        "showImage": true,
+        "cardCount": 1,
+        "imagePaginationEnabled": true
+      },
+      {
+        "layout": "GRID",
+        "cardType": "COMPACT_WIDTH_CARD",
+        "showImage": true,
+        "columns": 2,
+        "cardCount": 2,
+        "imagePaginationEnabled": false
+      },
+      {
+        "layout": "VERTICAL_LIST",
+        "cardType": "COMPACT_HEIGHT_CARD",
+        "showImage": true,
+        "cardCount": 4,
+        "imagePaginationEnabled": false
+      }
+    ]
+  },
+  {
+    "rank": 5,
+    "section_type": "weekly_recap",
+    "endpoint": "/mobile/recap?version=V6&type=mobile",
+    "header": {
+      "title": "Weekly Recap",
+      "subtitle": "",
+      "titleColor": "#5A5B66",
+      "subtitleColor": null
+    },
+    "supportedContents": [
+      "DOCUMENT",
+      "AUDIO"
+    ],
+    "theme": {
+      "backgroundImage": null,
+      "primaryColor": "#FFFFFF",
+      "secondaryColor": "#FFFFFF"
+    },
+    "cardCount": 6,
+    "groupCount": 1,
+    "showSection": true,
+    "analytics": "weekly_recap",
+    "sectionStyle": "single",
+    "sectionHeaderCta": null,
+    "sectionFooterCta": null,
+    "containers": [
+      {
+        "layout": "HORIZONTAL_LIST",
+        "cardType": "COMPACT_WIDTH_CARD",
+        "showImage": true,
+        "cardCount": 6,
+        "imagePaginationEnabled": false,
+        "showViewedStatus": true
+      }
+    ],
+    "behaviour": {
+      "parameter": "rank",
+      "updatedValue": "999",
+      "action": "VIEWED"
+    }
+  },
+  {
+    "rank": 9,
+    "section_type": "follow",
+    "endpoint": "",
+    "header": {
+      "title": "What You Follow",
+      "subtitle": "",
+      "titleColor": "#000000",
+      "subtitleColor": "#000000"
+    },
+    "supportedContents": [
+      "WEBINAR",
+      "DOCUMENT"
+    ],
+    "theme": {
+      "backgroundImage": null,
+      "primaryColor": "#000000",
+      "secondaryColor": "#000000"
+    },
+    "analytics": "follow",
+    "groupCount": 2,
+    "sectionHeaderCta": {
+      "actionType": "navigate",
+      "actionName": "feedSectionListing",
+      "text": "",
+      "position": "left"
+    },
+    "sectionFooterCta": null,
+    "contentHeaderCta": null,
+    "contentFooterCta": {
+      "actionType": "navigate",
+      "actionName": "kiListing",
+      "text": "View More",
+      "position": "right"
+    },
+    "containers": [
+      {
+        "layout": "VERTICAL_LIST",
+        "cardtype": "COMPACT_HEIGHT_CARD",
+        "showImage": true,
+        "cardCount": 1,
+        "imagePaginationEnabled": true
+      },
+      {
+        "layout": "GRID",
+        "cardtype": "COMPACT_WIDTH_CARD",
+        "showImage": true,
+        "columns": 2,
+        "cardCount": 2,
+        "imagePaginationEnabled": false
+      }
+    ],
+    "placement": null,
+    "behaviour": null
+  },
+  {
+    "rank": 8,
+    "section_type": "bys",
+    "endpoint": "/mobile/v3/searched?version=V3&type=mobile",
+    "header": {
+      "title": "Because you searched",
+      "subtitle": "",
+      "titleColor": "#000000",
+      "subtitleColor": "#000000"
+    },
+    "supportedContents": [
+      "WEBINAR",
+      "DOCUMENT"
+    ],
+    "theme": {
+      "backgroundImage": null,
+      "primaryColor": "#000000",
+      "secondaryColor": "#000000"
+    },
+    "analytics": "bys",
+    "groupCount": 3,
+    "sectionHeaderCta": null,
+    "sectionFooterCta": null,
+    "contentHeaderCta": {
+      "actionType": "navigate",
+      "actionName": "searchResults",
+      "text": "",
+      "position": "right"
+    },
+    "contentFooterCta": null,
+    "containers": [
+      {
+        "layout": "HORIZONTAL_LIST",
+        "cardtype": "COMPACT_HEIGHT_CARD",
+        "showImage": true,
+        "cardCount": 3,
+        "imagePaginationEnabled": false
+      }
+    ],
+    "placement": null,
+    "behaviour": null
+  }
+]

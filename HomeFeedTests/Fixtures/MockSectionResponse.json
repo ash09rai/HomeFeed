@@ -1,0 +1,12 @@
+{
+  "last_activity": [
+    { "id": "la_1", "title": "SwiftUI Layout Basics", "contentType": "VIDEO" },
+    { "id": "la_2", "title": "Accessibility for iOS", "contentType": "DOCUMENT" },
+    { "id": "la_3", "title": "Reactive Networking", "contentType": "AUDIO" }
+  ],
+  "recommended": [
+    { "id": "rec_1", "title": "Combine Deep Dive", "contentType": "VIDEO" },
+    { "id": "rec_2", "title": "Product Strategy", "contentType": "AUDIO" },
+    { "id": "rec_3", "title": "Unsupported Item", "contentType": "WEBINAR" }
+  ]
+}
