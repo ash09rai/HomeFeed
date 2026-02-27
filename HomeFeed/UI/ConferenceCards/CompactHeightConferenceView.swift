@@ -16,9 +16,7 @@ struct CompactHeightConferenceView: View {
                 .frame(width: 70, height: 70)
             
             VStack(alignment: .leading, spacing: 4) {
-                Text("CONFERENCE")
-                    .font(SystemDesign.font(.cardContentType))
-                    .foregroundStyle(Color.secondary)
+                ContentLabel(contentType: item.contentType)
                     .frame(height: 16)
                 CardTitleLabelView(cardTitle: item.title)
                 Text(item.eventLocation ?? "")

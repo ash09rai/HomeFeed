@@ -13,8 +13,18 @@ struct CalendarView: View {
             Color(red: 0, green: 40/255, blue: 105/255)
             calendarView
                 .overlay(
-                    RoundedRectangle(cornerRadius: 6)
-                        .stroke(.white, lineWidth: 1)
+                    RoundedRectangle(cornerRadius: 6) // Use the same corner radius for the border
+                        .stroke(
+                            LinearGradient(
+                                colors: [
+                                    .init(red: 184/255, green: 222/255, blue: 1.0),
+                                    .init(red: 31/255, green: 150/255, blue: 1.0),
+                                ],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            ),
+                            lineWidth: 1
+                        )
                 )
         }
         .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
@@ -24,10 +34,10 @@ struct CalendarView: View {
     var calendarView: some View {
         VStack {
             Text("Jan")
-                .font(SystemDesign.font(SystemDesign.Typography.caption))
+                .font(SystemDesign.font(SystemDesign.Typography.dateMonth))
                 .foregroundStyle(Color.white)
             Text("8-12")
-                .font(SystemDesign.font(SystemDesign.Typography.cardTitle))
+                .font(SystemDesign.font(SystemDesign.Typography.dateDay))
                 .foregroundStyle(Color.white)
         }
         .frame(width: 58, height: 58, alignment: .center)
