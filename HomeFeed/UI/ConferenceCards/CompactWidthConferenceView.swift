@@ -30,14 +30,13 @@ struct CompactWidthConferenceView: View {
     var body: some View {
         let cardShape = RoundedRectangle(cornerRadius: SystemDesign.CornerRadius.card, style: .continuous)
 
-        VStack(alignment: .leading, spacing: 12) {
-            HStack(alignment: .top, spacing: 8) {
-                ContentLabel(contentType: item.contentType)
+        VStack(alignment: .leading, spacing: 8) {
+            CalendarView()
+                .frame(width: 58, height: 58)
+                .padding(.bottom, 16)
+
+            ContentLabel(contentType: item.contentType)
                     .frame(height: 16)
-                Spacer(minLength: 0)
-                CalendarView()
-                    .frame(width: 54, height: 54)
-            }
 
             CardTitleLabelView(cardTitle: item.title)
 
@@ -45,26 +44,20 @@ struct CompactWidthConferenceView: View {
                 Text(location)
                     .font(SystemDesign.font(.location))
                     .foregroundStyle(SystemDesign.color(.location))
-                    .lineLimit(2)
-            }
-
-            if let dateText {
-                PublishedDateLabelView(dateText: dateText)
             }
 
             if let eventTime = item.eventTime, !eventTime.isEmpty {
                 Text(eventTime)
-                    .font(SystemDesign.font(.caption))
-                    .foregroundStyle(SystemDesign.color(.caption))
-                    .lineLimit(2)
+                    .font(SystemDesign.font(.location))
+                    .foregroundStyle(SystemDesign.color(.location))
             }
 
-            Spacer(minLength: 0)
-
-            VStack(alignment: .leading, spacing: 6) {
+            VStack(alignment: .leading) {
                 RegisteredButtonView()
                 FullTextButtonView()
+                    .frame(height: 22)
             }
+            .padding(.bottom, 0)
         }
         .padding(.all, 12)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
@@ -82,12 +75,13 @@ struct CompactWidthConferenceView_Previews: PreviewProvider {
             item: .init(
                 id: UUID().uuidString,
                 contentType: .conference,
-                title: "IT Symposium/XPO",
+                title: "Emerging Risks in 2026",
                 behaviour: FeedItemBehaviour(
                     summary: nil,
                     media: FeedItemMedia(),
                     schedule: FeedItemSchedule(
                         eventStartDate: "8 Jan 2026",
+                        eventTime: "9:00 AM - 10:00 AM EDT",
                         eventLocation: "Barcelona, Spain",
                         displayTimeZone: nil
                     ),

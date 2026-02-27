@@ -8,6 +8,9 @@
 import SwiftUI
 
 struct CalendarView: View {
+    var startDate: Date?
+    var endDate: Date?
+    
     var body: some View {
         ZStack {
             Color(red: 0, green: 40/255, blue: 105/255)
@@ -26,22 +29,24 @@ struct CalendarView: View {
                             lineWidth: 1
                         )
                 )
+                .padding(.all, 6)
         }
         .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
     }
     
     
     var calendarView: some View {
-        VStack {
-            Text("Jan")
-                .font(SystemDesign.font(SystemDesign.Typography.dateMonth))
-                .foregroundStyle(Color.white)
-            Text("8-12")
-                .font(SystemDesign.font(SystemDesign.Typography.dateDay))
-                .foregroundStyle(Color.white)
+        ZStack(alignment: .center) {
+            VStack(alignment: .center) {
+                Text("Jan")
+                    .font(SystemDesign.font(SystemDesign.Typography.dateMonth))
+                    .foregroundStyle(Color.white)
+                Text("8")
+                    .font(SystemDesign.font(SystemDesign.Typography.dateDay))
+                    .foregroundStyle(Color.white)
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
         }
-        .frame(width: 58, height: 58, alignment: .center)
-        .background(Color(red: 0, green: 40/255, blue: 105/255))
     }
 }
 

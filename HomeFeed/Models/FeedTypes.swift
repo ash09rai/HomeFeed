@@ -34,7 +34,7 @@ public struct ContentType: RawRepresentable, Hashable, Codable, Sendable {
         case "DOCUMENT":
             return "DOCUMENT"
         case "ONDEMANDWEBINAR", "WEBINAR":
-            return "ON_DEMAND_WEBINAR"
+            return "WEBINAR"
         case "UPCOMINGWEBINAR", "UPCOMING":
             return "UPCOMING_WEBINAR"
         case "VIDEO":
@@ -51,8 +51,8 @@ public struct ContentType: RawRepresentable, Hashable, Codable, Sendable {
     }
 
     public static let document = ContentType(rawValue: "DOCUMENT")
-    public static let onDemandWebinar = ContentType(rawValue: "ON_DEMAND_WEBINAR")
-    public static let upcomingWebinar = ContentType(rawValue: "UPCOMING_WEBINAR")
+    public static let onDemandWebinar = ContentType(rawValue: "WEBINAR")
+    public static let upcomingWebinar = ContentType(rawValue: "WEBINAR")
     public static let video = ContentType(rawValue: "VIDEO")
     public static let podcast = ContentType(rawValue: "PODCAST")
     public static let inquiry = ContentType(rawValue: "INQUIRY")
