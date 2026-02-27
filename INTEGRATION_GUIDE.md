@@ -42,7 +42,13 @@ This initializer builds:
 
 Add the `HomeFeed` project/target to the client workspace and link the framework to the application target.
 
-The module currently ships as an Xcode framework target. It is not packaged as a Swift Package.
+The module supports both direct framework integration and source-based Swift Package Manager integration.
+
+You can also add it through Swift Package Manager:
+
+1. In Xcode, open `File > Add Package Dependencies...`
+2. Use `https://github.com/ash09rai/HomeFeed.git`
+3. Add the `HomeFeed` library product to the app target
 
 ### Step 2: Implement `HomeFeedNetworkingProvider`
 

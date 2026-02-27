@@ -1,3 +1,4 @@
+#if canImport(UIKit)
 import Combine
 import SwiftUI
 import UIKit
@@ -1360,3 +1361,4 @@ private final class RecordingMockProvider: HomeFeedNetworkingProvider {
         Just([:]).setFailureType(to: Error.self).eraseToAnyPublisher()
     }
 }
+#endif

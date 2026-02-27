@@ -69,6 +69,17 @@ Core flow:
 3. Create a `HomeFeedViewModel` with capabilities and callbacks.
 4. Render `HomeFeedView(viewModel:)` inside your navigation, tab, or modal flow.
 
+## Swift Package Manager
+
+`HomeFeed` can also be consumed as a source package.
+
+In Xcode:
+
+1. Open `File > Add Package Dependencies...`
+2. Enter the repository URL: `https://github.com/ash09rai/HomeFeed.git`
+3. Choose a version or branch
+4. Add the `HomeFeed` library product to your app target
+
 Example:
 
 ```swift
