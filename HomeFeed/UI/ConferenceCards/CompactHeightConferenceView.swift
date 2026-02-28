@@ -1,10 +1,3 @@
-//
-//  CompactHeightConferenceView.swift
-//  HomeFeed
-//
-//  Created by Ashish Rai on 26/02/26.
-//
-
 import SwiftUI
 
 struct CompactHeightConferenceView: View {
@@ -16,16 +9,18 @@ struct CompactHeightConferenceView: View {
         HStack(alignment: .top, spacing: 12) {
             CalendarView()
                 .frame(width: 70, height: 70)
-            
+
             VStack(alignment: .leading, spacing: 4) {
                 ContentLabel(contentType: item.contentType)
                     .frame(height: 16)
                 CardTitleLabelView(cardTitle: item.title)
-                
+
                 Text(item.eventLocation ?? "")
                     .font(SystemDesign.font(.location))
                     .foregroundStyle(SystemDesign.color(.location))
                     .frame(height: 19)
+                
+                Spacer()
                 
                 if item.isRegistered {
                     HStack(spacing: 20) {
@@ -49,28 +44,8 @@ struct CompactHeightConferenceView: View {
 
 struct CompactHeightConferenceView_Previews: PreviewProvider {
     static var previews: some View {
-        CompactHeightConferenceView(
-            item: .init(
-                id: UUID().uuidString,
-                contentType: .conference,
-                title: "Emerging Risks in 2026",
-                behaviour: FeedItemBehaviour(
-                    summary: nil,
-                    media: FeedItemMedia(),
-                    schedule: FeedItemSchedule(
-                        eventStartDate: "8 Jan 2026",
-                        eventTime: "9:00 AM - 10:00 AM EDT",
-                        eventLocation: "Barcelona, Spain",
-                        displayTimeZone: nil
-                    ),
-                    statusText: "Registered",
-                    isRegistered: false,
-                    primaryAction: FeedItemAction(title: "Registered"),
-                    secondaryAction: FeedItemAction(title: "View Schedule")
-                )
-            )
-        )
-        .frame(width: 343, height: 128)
-        .previewLayout(.sizeThatFits)
+        CompactHeightConferenceView(item: content_card_preview_item.conference)
+            .frame(width: 343, height: 128)
+            .previewLayout(.sizeThatFits)
     }
 }

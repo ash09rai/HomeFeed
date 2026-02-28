@@ -103,15 +103,18 @@ public struct FeedItemAction: Equatable, Sendable, Codable {
 
 public struct FeedItemMedia: Equatable, Sendable, Codable {
     public var imageURL: String?
+    public var imageURLs: [String]?
     public var showImage: Bool?
     public var multipleImageSupport: Bool?
 
     public init(
         imageURL: String? = nil,
+        imageURLs: [String]? = nil,
         showImage: Bool? = nil,
         multipleImageSupport: Bool? = nil
     ) {
         self.imageURL = imageURL
+        self.imageURLs = imageURLs
         self.showImage = showImage
         self.multipleImageSupport = multipleImageSupport
     }
@@ -206,6 +209,24 @@ public struct FeedItem: Identifiable, Equatable, Sendable, Codable {
 
     public var imageURL: String? {
         behaviour.media.imageURL
+    }
+
+    public var imageURLs: [String] {
+        let candidates = (behaviour.media.imageURLs ?? []).compactMap { value -> String? in
+            let normalized = value.trimmingCharacters(in: .whitespacesAndNewlines)
+            return normalized.isEmpty ? nil : normalized
+        }
+
+        if !candidates.isEmpty {
+            return candidates
+        }
+
+        guard let imageURL else {
+            return []
+        }
+
+        let normalized = imageURL.trimmingCharacters(in: .whitespacesAndNewlines)
+        return normalized.isEmpty ? [] : [normalized]
     }
 
     public var showImage: Bool {

@@ -3,10 +3,16 @@ import SwiftUI
 public struct HomeFeedView: View {
     @ObservedObject private var viewModel: HomeFeedViewModel
     private let showsSkippedDebug: Bool
+    private let imageIntegration: HomeFeedImageIntegration?
 
-    public init(viewModel: HomeFeedViewModel, showsSkippedDebug: Bool = false) {
+    public init(
+        viewModel: HomeFeedViewModel,
+        showsSkippedDebug: Bool = false,
+        imageIntegration: HomeFeedImageIntegration? = nil
+    ) {
         self.viewModel = viewModel
         self.showsSkippedDebug = showsSkippedDebug
+        self.imageIntegration = imageIntegration
     }
 
     public var body: some View {
@@ -35,6 +41,7 @@ public struct HomeFeedView: View {
             }
             .padding(SystemDesign.Spacing.xl)
         }
+        .homeFeedImageIntegration(imageIntegration)
         .onAppear { viewModel.loadIfNeeded() }
     }
 }

@@ -1,20 +1,21 @@
-//
-//  InsightDocumentView.swift
-//  HomeFeed
-//
-//  Created by Ashish Rai on 26/02/26.
-//
-
 import SwiftUI
 
 struct InsightDocumentView: View {
     let item: FeedItem
+    let container: ContainerMeta?
+
+    init(item: FeedItem, container: ContainerMeta? = nil) {
+        self.item = item
+        self.container = container
+    }
 
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        insight_document_view(item: item, container: container)
     }
 }
 
 #Preview {
-    InsightDocumentView(item: .init(id: UUID().uuidString, contentType: .document, title: "How To Calculate Business Value and Cost for Generative AI Use Case"))
+    InsightDocumentView(item: content_card_preview_item.document)
+        .frame(width: 315, height: 315)
+        .previewLayout(.sizeThatFits)
 }

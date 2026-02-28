@@ -181,6 +181,7 @@ public enum MockSectionDataParser {
             ]),
             media: FeedItemMedia(
                 imageURL: imageURL,
+                imageURLs: imageURLs.isEmpty ? nil : imageURLs,
                 showImage: imageURL == nil ? nil : true,
                 multipleImageSupport: imageURLs.count > 1 ? true : nil
             )

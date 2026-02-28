@@ -52,7 +52,7 @@ public struct ContentType: RawRepresentable, Hashable, Codable, Sendable {
 
     public static let document = ContentType(rawValue: "DOCUMENT")
     public static let onDemandWebinar = ContentType(rawValue: "WEBINAR")
-    public static let upcomingWebinar = ContentType(rawValue: "WEBINAR")
+    public static let upcomingWebinar = ContentType(rawValue: "UPCOMING_WEBINAR")
     public static let video = ContentType(rawValue: "VIDEO")
     public static let podcast = ContentType(rawValue: "PODCAST")
     public static let inquiry = ContentType(rawValue: "INQUIRY")

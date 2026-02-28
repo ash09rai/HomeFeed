@@ -1,10 +1,3 @@
-//
-//  CompactHeightUpcomingWebinarView.swift
-//  HomeFeed
-//
-//  Created by Ashish Rai on 26/02/26.
-//
-
 import SwiftUI
 
 struct CompactHeightUpcomingWebinarView: View {
@@ -16,7 +9,7 @@ struct CompactHeightUpcomingWebinarView: View {
         HStack(alignment: .top, spacing: 12) {
             CalendarView()
                 .frame(width: 70, height: 70)
-            
+
             VStack(alignment: .leading, spacing: 4) {
                 ContentLabel(contentType: item.contentType)
                     .frame(height: 16)
@@ -25,7 +18,8 @@ struct CompactHeightUpcomingWebinarView: View {
                     .font(SystemDesign.font(.location))
                     .foregroundStyle(SystemDesign.color(.location))
                     .frame(height: 19)
-                
+
+                Spacer()
                 HStack(spacing: 20) {
                     RegisteredButtonView()
                     FullTextButtonView()
@@ -46,28 +40,8 @@ struct CompactHeightUpcomingWebinarView: View {
 
 struct CompactHeightUpcomingWebinarView_Previews: PreviewProvider {
     static var previews: some View {
-        CompactHeightUpcomingWebinarView(
-            item: .init(
-                id: UUID().uuidString,
-                contentType: .upcomingWebinar,
-                title: "Emerging Risks in 2026",
-                behaviour: FeedItemBehaviour(
-                    summary: nil,
-                    media: FeedItemMedia(),
-                    schedule: FeedItemSchedule(
-                        eventStartDate: "8 Jan 2026",
-                        eventTime: "9:00 AM - 10:00 AM EDT",
-                        eventLocation: "Barcelona, Spain",
-                        displayTimeZone: nil
-                    ),
-                    statusText: "Registered",
-                    isRegistered: true,
-                    primaryAction: FeedItemAction(title: "Registered"),
-                    secondaryAction: FeedItemAction(title: "View Schedule")
-                )
-            )
-        )
-        .frame(width: 343, height: 128)
-        .previewLayout(.sizeThatFits)
+        CompactHeightUpcomingWebinarView(item: content_card_preview_item.upcoming_webinar)
+            .frame(width: 343, height: 128)
+            .previewLayout(.sizeThatFits)
     }
 }

@@ -1,10 +1,3 @@
-//
-//  CompactHeightDocumentView.swift
-//  HomeFeed
-//
-//  Created by Ashish Rai on 26/02/26.
-//
-
 import SwiftUI
 
 struct CompactHeightDocumentView: View {
@@ -12,14 +5,14 @@ struct CompactHeightDocumentView: View {
 
     var body: some View {
         let cardShape = RoundedRectangle(cornerRadius: SystemDesign.CornerRadius.card, style: .continuous)
+
         VStack(alignment: .leading, spacing: 8) {
             HStack {
                 CardTitleLabelView(cardTitle: item.title)
-                
+
                 if item.showImage {
-                    HomeFeedZoo
+                    CompactHeightDocumentImageView(item: item)
                 }
-                
             }
             Spacer()
             HStack(alignment: .center, spacing: 8) {
@@ -38,35 +31,15 @@ struct CompactHeightDocumentView: View {
         .background(SystemDesign.color(.surface), in: cardShape)
         .overlay(
             cardShape
-                .stroke(SystemDesign.accent(for: .conference).opacity(0.2), lineWidth: SystemDesign.Border.thin)
+                .stroke(SystemDesign.accent(for: .document).opacity(0.2), lineWidth: SystemDesign.Border.thin)
         )
     }
 }
 
 struct CompactHeightDocumentView_Previews: PreviewProvider {
     static var previews: some View {
-        CompactHeightDocumentView(
-            item: .init(
-                id: UUID().uuidString,
-                contentType: .document,
-                title: "Client Webinar: Executive FastStart - How New AI Leaders can Accelerate",
-                behaviour: FeedItemBehaviour(
-                    summary: nil,
-                    media: FeedItemMedia(),
-                    schedule: FeedItemSchedule(
-                        eventStartDate: "8 Jan 2026",
-                        eventTime: "9:00 AM - 10:00 AM EDT",
-                        eventLocation: "Barcelona, Spain",
-                        displayTimeZone: nil
-                    ),
-                    statusText: "Registered",
-                    isRegistered: false,
-                    primaryAction: FeedItemAction(title: "Registered"),
-                    secondaryAction: FeedItemAction(title: "View Schedule")
-                )
-            )
-        )
-        .frame(width: 343, height: 128)
-        .previewLayout(.sizeThatFits)
+        CompactHeightDocumentView(item: content_card_preview_item.document)
+            .frame(width: 343, height: 128)
+            .previewLayout(.sizeThatFits)
     }
 }

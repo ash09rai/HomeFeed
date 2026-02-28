@@ -1,34 +1,33 @@
 //
-//  SaveButton.swift
+//  PlayButtonView.swift
 //  HomeFeed
 //
-//  Created by Ashish Rai on 26/02/26.
+//  Created by Ashish Rai on 28/02/26.
 //
 
 import SwiftUI
 
 // 1. Define the abstraction (Dependency Inversion)
-protocol SaveButtonHandler {
-    func saveContent()
+protocol PlayButtonHandler {
+    func playContent()
 }
 
 // 2. Concrete implementation for production
-class SaveHandler: SaveButtonHandler {
-    func saveContent() {
+class PlayHandler: PlayButtonHandler {
+    func playContent() {
         print("Production action triggered")
     }
 }
 
-// 3. View with injected dependency
-struct SaveButton: View {
+struct PlayButtonView: View {
     // We only know about the abstraction, not the implementation
-    let handler: SaveButtonHandler
+    let handler: PlayButtonHandler
 
     var body: some View {
         Button {
-            handler.saveContent()
+            handler.playContent()
         } label: {
-            Image(systemName: "bookmark")
+            Image(systemName: "play.fill")
                 .scaledToFit()
                 .foregroundStyle(SystemDesign.buttonForegroundColor)
                 .imageScale(.large)
@@ -38,9 +37,9 @@ struct SaveButton: View {
     }
 }
 
-struct SaveButton_Previews: PreviewProvider {
+struct PlayButtonView_Previews: PreviewProvider {
     static var previews: some View {
-        SaveButton(handler: SaveHandler())
+        PlayButtonView(handler: PlayHandler())
         .frame(width: 44, height: 44)
         .previewLayout(.sizeThatFits)
     }

@@ -1,20 +1,21 @@
-//
-//  InsightPodcastView.swift
-//  HomeFeed
-//
-//  Created by Ashish Rai on 26/02/26.
-//
-
 import SwiftUI
 
 struct InsightPodcastView: View {
     let item: FeedItem
+    let container: ContainerMeta?
+
+    init(item: FeedItem, container: ContainerMeta? = nil) {
+        self.item = item
+        self.container = container
+    }
 
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        insight_podcast_view(item: item, container: container)
     }
 }
 
 #Preview {
-    InsightPodcastView(item: .init(id: UUID().uuidString, contentType: .podcast, title: "How To Calculate Business Value and Cost for Generative AI Use Case"))
+    InsightPodcastView(item: content_card_preview_item.podcast)
+        .frame(width: 315, height: 315)
+        .previewLayout(.sizeThatFits)
 }

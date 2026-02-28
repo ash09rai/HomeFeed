@@ -66,7 +66,7 @@ public final class SystemDesign {
         var foregroundColor: Color {
             switch self {
             case .sectionTitle: return .clear
-            case .cardTitle: return .init(red: 21/255, green: 23/255, blue: 29/255)
+            case .cardTitle: return .init(red: 50/255, green: 52/255, blue: 64/255)
             case .cardContentType, .location, .caption: return .init(red: 90/255, green: 91/255, blue: 102/255)
             case .primaryButton: return .init(red: 0/255, green: 122/255, blue: 80/255)
             case .secondaryButton: return .init(red: 0/255, green: 106/255, blue: 199/255)
@@ -86,12 +86,14 @@ public final class SystemDesign {
     }
 
     public enum CornerRadius {
-        public static let card: CGFloat = 12
+        public static let card: CGFloat = 16
+        public static let imageCornerRadius: CGFloat = 8
         public static let pill: CGFloat = 999
     }
 
     public enum Border {
         public static let thin: CGFloat = 1
+        public static let insight: CGFloat = 2
     }
 
     public enum Palette {

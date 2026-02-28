@@ -1,20 +1,21 @@
-//
-//  TopThumbnailDocumentView.swift
-//  HomeFeed
-//
-//  Created by Ashish Rai on 26/02/26.
-//
-
 import SwiftUI
 
 struct TopThumbnailDocumentView: View {
     let item: FeedItem
+    let container: ContainerMeta?
+
+    init(item: FeedItem, container: ContainerMeta? = nil) {
+        self.item = item
+        self.container = container
+    }
 
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        top_thumbnail_document_view(item: item, container: container)
     }
 }
 
 #Preview {
-    TopThumbnailDocumentView(item: .init(id: UUID().uuidString, contentType: .document, title: "How To Calculate Business Value and Cost for Generative AI Use Case"))
+    TopThumbnailDocumentView(item: content_card_preview_item.document)
+        .frame(width: 343, height: 241)
+        .previewLayout(.sizeThatFits)
 }

@@ -38,6 +38,10 @@ struct ListenButtonView: View {
     }
 }
 
-#Preview {
-    ListenButtonView(handler: ListenHandler())
+struct ListenButtonView_Previews: PreviewProvider {
+    static var previews: some View {
+        ListenButtonView(handler: ListenHandler())
+        .frame(width: 44, height: 44)
+        .previewLayout(.sizeThatFits)
+    }
 }

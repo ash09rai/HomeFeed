@@ -1,20 +1,21 @@
-//
-//  InsightVideoView.swift
-//  HomeFeed
-//
-//  Created by Ashish Rai on 26/02/26.
-//
-
 import SwiftUI
 
 struct InsightVideoView: View {
     let item: FeedItem
+    let container: ContainerMeta?
+
+    init(item: FeedItem, container: ContainerMeta? = nil) {
+        self.item = item
+        self.container = container
+    }
 
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        insight_video_view(item: item, container: container)
     }
 }
 
 #Preview {
-    InsightVideoView(item: .init(id: UUID().uuidString, contentType: .video, title: "How To Calculate Business Value and Cost for Generative AI Use Case"))
+    InsightVideoView(item: content_card_preview_item.video)
+        .frame(width: 315, height: 315)
+        .previewLayout(.sizeThatFits)
 }

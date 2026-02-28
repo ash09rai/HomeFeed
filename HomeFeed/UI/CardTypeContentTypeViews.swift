@@ -14,67 +14,67 @@ struct card_type_content_type_view: View {
     var body: some View {
         switch (cardType.rawValue, item.contentType.rawValue) {
         case (CardType.compactHeight.rawValue, ContentType.document.rawValue):
-            compact_height_document_view(item: item, container: container)
+            CompactHeightDocumentView(item: item) //container
         case (CardType.compactHeight.rawValue, ContentType.onDemandWebinar.rawValue):
-            compact_height_on_demand_webinar_view(item: item, container: container)
+            CompactHeightOnDemandWebinarView(item: item) //container
         case (CardType.compactHeight.rawValue, ContentType.upcomingWebinar.rawValue):
-            compact_height_upcoming_webinar_view(item: item, container: container)
+            CompactHeightUpcomingWebinarView(item: item) //container
         case (CardType.compactHeight.rawValue, ContentType.video.rawValue):
-            compact_height_video_view(item: item, container: container)
+            CompactHeightVideoView(item: item) //container
         case (CardType.compactHeight.rawValue, ContentType.podcast.rawValue):
-            compact_height_podcast_view(item: item, container: container)
+            CompactHeightPodcastView(item: item) //container
         case (CardType.compactHeight.rawValue, ContentType.inquiry.rawValue):
-            compact_height_inquiry_view(item: item, container: container)
+            CompactHeightInquiryView(item: item) //container
         case (CardType.compactHeight.rawValue, ContentType.conference.rawValue):
-            compact_height_conference_view(item: item, container: container)
+            CompactHeightConferenceView(item: item) //container
 
         case (CardType.compactWidth.rawValue, ContentType.document.rawValue):
-            compact_width_document_view(item: item, container: container)
+            CompactWidthDocumentView(item: item) //container
         case (CardType.compactWidth.rawValue, ContentType.onDemandWebinar.rawValue):
-            compact_width_on_demand_webinar_view(item: item, container: container)
+            CompactWidthOnDemandWebinarView(item: item) //container
         case (CardType.compactWidth.rawValue, ContentType.upcomingWebinar.rawValue):
-            compact_width_upcoming_webinar_view(item: item, container: container)
+            CompactWidthUpcomingWebinarView(item: item) //container
         case (CardType.compactWidth.rawValue, ContentType.video.rawValue):
-            compact_width_video_view(item: item, container: container)
+            CompactWidthVideoView(item: item) //container
         case (CardType.compactWidth.rawValue, ContentType.podcast.rawValue):
-            compact_width_podcast_view(item: item, container: container)
+            CompactWidthPodcastView(item: item) //container
         case (CardType.compactWidth.rawValue, ContentType.inquiry.rawValue):
-            compact_width_inquiry_view(item: item, container: container)
+            CompactWidthInquiryView(item: item) //container
         case (CardType.compactWidth.rawValue, ContentType.conference.rawValue):
-            compact_width_conference_view(item: item, container: container)
+            CompactWidthConferenceView(item: item) //container
 
         case (CardType.topThumbnail.rawValue, ContentType.document.rawValue):
-            top_thumbnail_document_view(item: item, container: container)
+            TopThumbnailDocumentView(item: item)
         case (CardType.topThumbnail.rawValue, ContentType.onDemandWebinar.rawValue):
-            top_thumbnail_on_demand_webinar_view(item: item, container: container)
+            TopThumbnailOnDemandWebinarView(item: item)
         case (CardType.topThumbnail.rawValue, ContentType.upcomingWebinar.rawValue):
-            top_thumbnail_upcoming_webinar_view(item: item, container: container)
+            TopThumbnailUpcomingWebinarView(item: item)
         case (CardType.topThumbnail.rawValue, ContentType.video.rawValue):
-            top_thumbnail_video_view(item: item, container: container)
+            TopThumbnailVideoView(item: item)
         case (CardType.topThumbnail.rawValue, ContentType.podcast.rawValue):
-            top_thumbnail_podcast_view(item: item, container: container)
+            TopThumbnailPodcastView(item: item)
         case (CardType.topThumbnail.rawValue, ContentType.inquiry.rawValue):
-            top_thumbnail_inquiry_view(item: item, container: container)
+            TopThumbnailInquiryView(item: item)
         case (CardType.topThumbnail.rawValue, ContentType.conference.rawValue):
-            top_thumbnail_conference_view(item: item, container: container)
+            TopThumbnailConferenceView(item: item)
 
         case (CardType.insight.rawValue, ContentType.document.rawValue):
-            insight_document_view(item: item, container: container)
+            InsightDocumentView(item: item)
         case (CardType.insight.rawValue, ContentType.onDemandWebinar.rawValue):
-            insight_on_demand_webinar_view(item: item, container: container)
+            InsightOnDemandWebinarView(item: item)
         case (CardType.insight.rawValue, ContentType.upcomingWebinar.rawValue):
-            insight_upcoming_webinar_view(item: item, container: container)
+            InsightUpcomingWebinarView(item: item)
         case (CardType.insight.rawValue, ContentType.video.rawValue):
-            insight_video_view(item: item, container: container)
+            InsightVideoView(item: item)
         case (CardType.insight.rawValue, ContentType.podcast.rawValue):
-            insight_podcast_view(item: item, container: container)
+            InsightPodcastView(item: item)
         case (CardType.insight.rawValue, ContentType.inquiry.rawValue):
-            insight_inquiry_view(item: item, container: container)
+            InsightInquiryView(item: item)
         case (CardType.insight.rawValue, ContentType.conference.rawValue):
-            insight_conference_view(item: item, container: container)
+            InsightConferenceView(item: item)
 
         default:
-            fallback_card_content_view(item: item, cardType: cardType, container: container)
+            EmptyView()
         }
     }
 }
@@ -161,16 +161,17 @@ private struct content_card_shell_view: View {
         let shape = RoundedRectangle(cornerRadius: SystemDesign.CornerRadius.card, style: .continuous)
 
         VStack(alignment: .leading, spacing: SystemDesign.Spacing.sm) {
-            if usesTopImage, shouldShowImage, let imageURL = item.imageURL {
+            if usesTopImage, shouldShowImage, !item.imageURLs.isEmpty {
                 content_card_image_view(
-                    imageURL: imageURL,
+                    imageURLs: item.imageURLs,
+                    contentType: item.contentType,
                     accent: accent,
                     height: topImageHeight,
                     width: nil
                 )
             }
 
-            if shouldShowImage, !usesTopImage, let imageURL = item.imageURL {
+            if shouldShowImage, !usesTopImage, !item.imageURLs.isEmpty {
                 HStack(alignment: .top, spacing: SystemDesign.Spacing.md) {
                     content_card_copy_view(
                         item: item,
@@ -179,7 +180,8 @@ private struct content_card_shell_view: View {
                         showsExtendedSummary: cardType != .compactWidth
                     )
                     content_card_image_view(
-                        imageURL: imageURL,
+                        imageURLs: item.imageURLs,
+                        contentType: item.contentType,
                         accent: accent,
                         height: sideImageHeight,
                         width: sideImageWidth
@@ -332,28 +334,47 @@ private struct content_card_chip_view: View {
 }
 
 private struct content_card_image_view: View {
-    let imageURL: String
+    let imageURLs: [String]
+    let contentType: ContentType
     let accent: Color
     let height: CGFloat
     let width: CGFloat?
+    @Environment(\.homeFeedImageIntegration) private var imageIntegration
+
+    private var resolvedURLs: [URL] {
+        imageURLs.compactMap { candidate in
+            let normalized = candidate.trimmingCharacters(in: .whitespacesAndNewlines)
+            guard !normalized.isEmpty else {
+                return nil
+            }
+            return URL(string: normalized)
+        }
+    }
+
+    private var supportsZoomableImageIntegration: Bool {
+        switch contentType {
+        case .document, .video, .podcast:
+            return true
+        default:
+            return false
+        }
+    }
 
     var body: some View {
         let shape = RoundedRectangle(cornerRadius: SystemDesign.CornerRadius.card, style: .continuous)
 
-        AsyncImage(url: URL(string: imageURL)) { phase in
-            switch phase {
-            case let .success(image):
-                image
-                    .resizable()
-                    .scaledToFill()
-            default:
-                Rectangle()
-                    .fill(accent.opacity(0.12))
-                    .overlay(
-                        Image(systemName: "photo")
-                            .font(.system(size: 16, weight: .medium))
-                            .foregroundStyle(accent)
-                    )
+        Group {
+            if supportsZoomableImageIntegration {
+                home_feed_managed_image_content_view(
+                    urls: resolvedURLs,
+                    integration: imageIntegration,
+                    accent: accent
+                )
+            } else {
+                home_feed_remote_image_fallback_view(
+                    url: resolvedURLs.first,
+                    accent: accent
+                )
             }
         }
         .frame(maxWidth: width == nil ? .infinity : nil)
@@ -738,17 +759,7 @@ private struct fallback_card_content_view: View {
 #Preview {
     card_type_content_type_view(
         cardType: .compactHeight,
-        item: FeedItem(
-            id: "preview",
-            contentType: .document,
-            title: "How To Calculate Business Value and Cost for Generative AI Use Case",
-            behaviour: FeedItemBehaviour(
-                summary: "A sample card wired through the reusable FeedItem bridge.",
-                media: FeedItemMedia(imageURL: "https://www.gartner.com/resources/836200/836261/Figure_1_CIO_Leadership_of_People_Culture_and_Change_Overview.png"),
-                schedule: FeedItemSchedule(publishedDate: "2 Dec 2025"),
-                primaryAction: FeedItemAction(title: "Save")
-            )
-        )
+        item: content_card_preview_item.document
     )
     .padding()
 }
