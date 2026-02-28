@@ -14,8 +14,10 @@ struct TopThumbnailOnDemandWebinarView: View {
     }
 }
 
-#Preview {
-    TopThumbnailOnDemandWebinarView(item: content_card_preview_item.on_demand_webinar)
-        .frame(width: 343, height: 241)
-        .previewLayout(.sizeThatFits)
+struct TopThumbnailOnDemandWebinarView_Previews: PreviewProvider {
+    static var previews: some View {
+        TopThumbnailOnDemandWebinarView(item: content_card_preview_item.document)
+            .frame(width: 343, height: 302)
+            .previewLayout(.sizeThatFits)
+    }
 }

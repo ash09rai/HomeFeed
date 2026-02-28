@@ -7,14 +7,18 @@ struct CompactHeightDocumentView: View {
         let cardShape = RoundedRectangle(cornerRadius: SystemDesign.CornerRadius.card, style: .continuous)
 
         VStack(alignment: .leading, spacing: 8) {
-            HStack {
+            HStack(spacing: 8) {
                 CardTitleLabelView(cardTitle: item.title)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
 
-                if item.showImage {
+                if item.showImage, (!item.imageURLs.isEmpty || item.imageURL != nil) {
                     CompactHeightDocumentImageView(item: item)
+                        .frame(width: 116, height: 64)
                 }
             }
+
             Spacer()
+            
             HStack(alignment: .center, spacing: 8) {
                 if let publishedDate = item.publishedDate {
                     PublishedDateLabelView(dateText: publishedDate)
@@ -23,10 +27,10 @@ struct CompactHeightDocumentView: View {
                 SaveButton(handler: SaveHandler())
                 ListenButtonView(handler: ListenHandler())
             }
-            .padding(.bottom, 0)
             .frame(height: 44)
         }
-        .padding([.top, .leading, .trailing], 12)
+        .padding([.top, .leading], 16)
+        .padding(.trailing, 12)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         .background(SystemDesign.color(.surface), in: cardShape)
         .overlay(
@@ -39,7 +43,7 @@ struct CompactHeightDocumentView: View {
 struct CompactHeightDocumentView_Previews: PreviewProvider {
     static var previews: some View {
         CompactHeightDocumentView(item: content_card_preview_item.document)
-            .frame(width: 343, height: 128)
+            .frame(width: 343, height: 136)
             .previewLayout(.sizeThatFits)
     }
 }

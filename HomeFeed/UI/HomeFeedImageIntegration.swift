@@ -127,7 +127,8 @@ struct home_feed_remote_image_placeholder_view: View {
 struct CompactHeightDocumentImageView: View {
     let item: FeedItem
     @Environment(\.homeFeedImageIntegration) private var imageIntegration
-
+    var showRadius: Bool = true
+    
     private var resolvedURLs: [URL] {
         item.imageURLs.compactMap { value in
             let normalized = value.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -139,14 +140,13 @@ struct CompactHeightDocumentImageView: View {
     }
 
     var body: some View {
-        let shape = RoundedRectangle(cornerRadius: SystemDesign.CornerRadius.card, style: .continuous)
+        let shape = RoundedRectangle(cornerRadius: showRadius ? SystemDesign.CornerRadius.imageCornerRadius : 0, style: .continuous)
 
         home_feed_managed_image_content_view(
             urls: resolvedURLs,
             integration: imageIntegration,
             accent: SystemDesign.accent(for: .document)
         )
-        .frame(width: 72, height: 72)
         .clipShape(shape)
         .overlay(
             shape.stroke(SystemDesign.color(.border), lineWidth: SystemDesign.Border.thin)

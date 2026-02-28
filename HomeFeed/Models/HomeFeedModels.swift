@@ -202,6 +202,18 @@ public struct FeedItem: Identifiable, Equatable, Sendable, Codable {
         self.saved = saved
         self.behaviour = behaviour
     }
+    
+    public var shouldShowImage: Bool {
+        if showImage == false {
+            return false
+        } else if imageURLs.isEmpty {
+            return false
+        } else if imageURL == nil {
+            return false
+        } else {
+            return true
+        }
+    }
 
     public var summary: String? {
         behaviour.summary

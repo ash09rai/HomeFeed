@@ -66,7 +66,7 @@ public final class SystemDesign {
         var foregroundColor: Color {
             switch self {
             case .sectionTitle: return .clear
-            case .cardTitle: return .init(red: 50/255, green: 52/255, blue: 64/255)
+            case .cardTitle: return .init(red: 21/255, green: 23/255, blue: 29/255)
             case .cardContentType, .location, .caption: return .init(red: 90/255, green: 91/255, blue: 102/255)
             case .primaryButton: return .init(red: 0/255, green: 122/255, blue: 80/255)
             case .secondaryButton: return .init(red: 0/255, green: 106/255, blue: 199/255)
