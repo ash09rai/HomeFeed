@@ -172,6 +172,7 @@ public struct ContainerMeta: Equatable, Sendable, Codable {
     public var scrollDirection: ScrollDirection
     public var showImage: Bool
     public var cardCount: Int?
+    public var columns: Int?
     public var imagePaginationEnabled: Bool
 
     public init(
@@ -180,6 +181,7 @@ public struct ContainerMeta: Equatable, Sendable, Codable {
         scrollDirection: ScrollDirection,
         showImage: Bool,
         cardCount: Int?,
+        columns: Int? = nil,
         imagePaginationEnabled: Bool
     ) {
         self.layout = layout
@@ -187,6 +189,7 @@ public struct ContainerMeta: Equatable, Sendable, Codable {
         self.scrollDirection = scrollDirection
         self.showImage = showImage
         self.cardCount = cardCount
+        self.columns = columns
         self.imagePaginationEnabled = imagePaginationEnabled
     }
 }

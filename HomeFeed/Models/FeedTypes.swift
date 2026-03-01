@@ -124,6 +124,7 @@ public struct LayoutType: RawRepresentable, Hashable, Codable, Sendable {
 
     public static let horizontalList = LayoutType(rawValue: "HORIZONTAL_LIST")
     public static let verticalList = LayoutType(rawValue: "VERTICAL_LIST")
+    public static let grid = LayoutType(rawValue: "GRID")
 }
 
 public struct ScrollDirection: RawRepresentable, Hashable, Codable, Sendable {

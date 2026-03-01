@@ -33,7 +33,7 @@ public struct HomeFeedCapabilities: Equatable, Sendable {
                 .conference
             ],
             supportedCardTypes: [.compactHeight, .compactWidth, .topThumbnail, .insight],
-            supportedLayouts: [.horizontalList, .verticalList],
+            supportedLayouts: [.horizontalList, .verticalList, .grid],
             supportedScrollDirections: [.horizontal, .vertical],
             supportedSectionParameters: [
                 "rank",

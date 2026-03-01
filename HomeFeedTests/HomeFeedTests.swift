@@ -132,9 +132,9 @@ final class HomeFeedTests: XCTestCase {
 
         let result = try validator.validate(config: config, capabilities: .default)
 
-        XCTAssertEqual(result.validSections.map(\.sectionType), ["last_activity", "recommended"])
-        XCTAssertEqual(result.validSections.map(\.rank), [1, 2])
-        XCTAssertEqual(Set(result.skippedSections.map { $0.0.sectionType }), ["unsupported_layout", "hidden"])
+        XCTAssertEqual(result.validSections.map(\.sectionType), ["last_activity", "recommended", "unsupported_layout"])
+        XCTAssertEqual(result.validSections.map(\.rank), [1, 2, 3])
+        XCTAssertEqual(Set(result.skippedSections.map { $0.0.sectionType }), ["hidden"])
     }
 
     func testCapabilityValidatorFailsForUnsupportedSectionParameters() throws {
@@ -168,9 +168,9 @@ final class HomeFeedTests: XCTestCase {
         viewModel.load()
         wait(for: [done], timeout: 2.0)
 
-        XCTAssertEqual(provider.fetchSectionCallTypes.sorted(), ["last_activity", "recommended"])
-        XCTAssertEqual(viewModel.skippedSections.count, 2)
-        XCTAssertEqual(viewModel.sections.count, 2)
+        XCTAssertEqual(provider.fetchSectionCallTypes.sorted(), ["last_activity", "recommended", "unsupported_layout"])
+        XCTAssertEqual(viewModel.skippedSections.count, 1)
+        XCTAssertEqual(viewModel.sections.count, 3)
     }
 
     func testViewModelEmitsNoRenderableSectionsWhenAllSectionsSkipped() throws {
@@ -184,7 +184,7 @@ final class HomeFeedTests: XCTestCase {
             "showSection": true,
             "containers": [
               {
-                "layout": "GRID",
+                "layout": "MASONRY",
                 "cardType": "STANDARD_CARD",
                 "showImage": true,
                 "cardCount": 2,
@@ -218,6 +218,37 @@ final class HomeFeedTests: XCTestCase {
 
         XCTAssertEqual(homeFeedError, .noRenderableSections)
         XCTAssertTrue(provider.fetchSectionCallTypes.isEmpty)
+    }
+
+    func testConfigParserStoresGridColumns() throws {
+        let json = """
+        [
+          {
+            "rank": 1,
+            "section_type": "grid_section",
+            "endpoint": "/grid",
+            "supportedContents": ["VIDEO"],
+            "showSection": true,
+            "containers": [
+              {
+                "layout": "GRID",
+                "cardType": "COMPACT_WIDTH_CARD",
+                "columns": 2,
+                "showImage": true,
+                "cardCount": 4,
+                "imagePaginationEnabled": false
+              }
+            ]
+          }
+        ]
+        """
+
+        let config = try HomeFeedConfigParser().parse(data: Data(json.utf8))
+        let container = try XCTUnwrap(config.sections.first?.containers.first)
+
+        XCTAssertEqual(container.layout, .grid)
+        XCTAssertEqual(container.columns, 2)
+        XCTAssertEqual(container.scrollDirection, .vertical)
     }
 
     func testViewModelEmitsAllSectionsFailedWhenAllSectionsFail() throws {
@@ -793,6 +824,34 @@ final class HomeFeedTests: XCTestCase {
         XCTAssertFalse(defaultItems.isEmpty)
         XCTAssertTrue(defaultItems.contains(where: { $0.contentType == .video }))
         XCTAssertTrue(defaultItems.contains(where: { $0.contentType == .onDemandWebinar || $0.contentType == .upcomingWebinar }))
+    }
+
+    func testMockSectionDataParserSupportsNestedGroupedWrappers() throws {
+        let json = """
+        {
+          "data": {
+            "groups": [
+              {
+                "items": [
+                  {
+                    "title": "Nested Video Payload",
+                    "contentId": "vid-1",
+                    "contentType": "VIDEO",
+                    "pubDate": "01 January 2026"
+                  }
+                ]
+              }
+            ]
+          }
+        }
+        """
+
+        let parsed = try MockSectionDataParser.parse(data: Data(json.utf8))
+        let item = try XCTUnwrap(parsed["default"]?.items.first)
+
+        XCTAssertEqual(item.id, "vid-1")
+        XCTAssertEqual(item.contentType, .video)
+        XCTAssertEqual(item.publishedDate, "01 January 2026")
     }
 
     func testMockSectionDataParserMapsFeedItemBehaviourFromUpdatedPayload() throws {

@@ -290,6 +290,13 @@ private struct loading_container_list_view: View {
     let container: ContainerMeta
     let placeholderCount: Int
 
+    private var gridItems: [GridItem] {
+        Array(
+            repeating: GridItem(.flexible(), spacing: SystemDesign.Spacing.md, alignment: .top),
+            count: max(container.columns ?? 2, 1)
+        )
+    }
+
     var body: some View {
         if container.layout == .horizontalList {
             ScrollView(.horizontal, showsIndicators: false) {
@@ -297,6 +304,12 @@ private struct loading_container_list_view: View {
                     ForEach(0..<placeholderCount, id: \.self) { _ in
                         loading_card_placeholder_view(container: container)
                     }
+                }
+            }
+        } else if container.layout == .grid {
+            LazyVGrid(columns: gridItems, alignment: .leading, spacing: SystemDesign.Spacing.md) {
+                ForEach(0..<placeholderCount, id: \.self) { _ in
+                    loading_card_placeholder_view(container: container)
                 }
             }
         } else {
@@ -313,6 +326,13 @@ private struct container_list_view: View {
     let container: ContainerMeta
     let items: [FeedItem]
 
+    private var gridItems: [GridItem] {
+        Array(
+            repeating: GridItem(.flexible(), spacing: SystemDesign.Spacing.md, alignment: .top),
+            count: max(container.columns ?? 2, 1)
+        )
+    }
+
     var body: some View {
         if container.layout == .horizontalList {
             ScrollView(.horizontal, showsIndicators: false) {
@@ -320,6 +340,12 @@ private struct container_list_view: View {
                     ForEach(items) { item in
                         card_type_content_type_view(cardType: container.cardType, item: item, container: container)
                     }
+                }
+            }
+        } else if container.layout == .grid {
+            LazyVGrid(columns: gridItems, alignment: .leading, spacing: SystemDesign.Spacing.md) {
+                ForEach(items) { item in
+                    card_type_content_type_view(cardType: container.cardType, item: item, container: container)
                 }
             }
         } else {
@@ -354,7 +380,7 @@ private struct loading_card_placeholder_view: View {
                 .frame(width: metrics.secondaryLineWidth, height: 12)
         }
         .padding(SystemDesign.Spacing.md)
-        .frame(maxWidth: container.layout == .verticalList ? .infinity : nil, alignment: .leading)
+        .frame(maxWidth: container.layout == .horizontalList ? nil : .infinity, alignment: .leading)
         .frame(width: metrics.width, alignment: .topLeading)
         .frame(minHeight: metrics.minHeight, alignment: .topLeading)
         .background(

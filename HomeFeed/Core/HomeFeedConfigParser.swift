@@ -132,6 +132,7 @@ public final class HomeFeedConfigParser {
                 scrollDirection: ScrollDirection(rawValue: direction),
                 showImage: boolValue(container["showImage"]) ?? true,
                 cardCount: intValue(container["cardCount"]),
+                columns: intValue(container["columns"]),
                 imagePaginationEnabled: boolValue(container["imagePaginationEnabled"]) ?? false
             )
         }
@@ -273,6 +274,8 @@ public final class HomeFeedConfigParser {
         switch layout.uppercased() {
         case LayoutType.horizontalList.rawValue:
             return ScrollDirection.horizontal.rawValue
+        case LayoutType.grid.rawValue:
+            return ScrollDirection.vertical.rawValue
         case LayoutType.verticalList.rawValue:
             return ScrollDirection.vertical.rawValue
         default:

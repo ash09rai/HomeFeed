@@ -55,6 +55,12 @@ public enum MockSectionDataParser {
             return output
         }
 
+        if let dict = raw as? [String: Any] {
+            if let resolved = parseSectionDictionary(dict) {
+                return resolved
+            }
+        }
+
         if let wrapper = raw as? [String: Any], let items = wrapper["data"] as? [[String: Any]] {
             return ["default": SectionData(items: parseItems(from: items))]
         }
@@ -66,6 +72,92 @@ public enum MockSectionDataParser {
         throw ConfigurationValidationError.malformedConfiguration(
             "Mock section response should be a dictionary, array, or data wrapper"
         )
+    }
+
+    private static func parseSectionDictionary(_ dictionary: [String: Any]) -> [String: SectionData]? {
+        if let items = firstItemArray(in: dictionary) {
+            return ["default": SectionData(items: parseItems(from: items))]
+        }
+
+        let keyedSections = dictionary.compactMapValues { value -> SectionData? in
+            guard let items = firstItemArray(in: value) else {
+                return nil
+            }
+            return SectionData(items: parseItems(from: items))
+        }
+
+        return keyedSections.isEmpty ? nil : keyedSections
+    }
+
+    private static func firstItemArray(in value: Any?) -> [[String: Any]]? {
+        guard let value else {
+            return nil
+        }
+
+        if let items = value as? [[String: Any]], containsRenderableItems(items) {
+            return items
+        }
+
+        if let dictionaries = value as? [[String: Any]] {
+            for entry in dictionaries {
+                if let items = firstItemArray(in: entry) {
+                    return items
+                }
+            }
+        }
+
+        if let arrays = value as? [Any] {
+            for entry in arrays {
+                if let items = firstItemArray(in: entry) {
+                    return items
+                }
+            }
+        }
+
+        if let dictionary = value as? [String: Any] {
+            let preferredKeys = [
+                "data",
+                "items",
+                "results",
+                "content",
+                "contents",
+                "cards",
+                "records",
+                "resources",
+                "response"
+            ]
+
+            for key in preferredKeys {
+                if let items = firstItemArray(in: dictionary[key]) {
+                    return items
+                }
+            }
+
+            for nested in dictionary.values {
+                if let items = firstItemArray(in: nested) {
+                    return items
+                }
+            }
+        }
+
+        return nil
+    }
+
+    private static func containsRenderableItems(_ items: [[String: Any]]) -> Bool {
+        items.contains(where: looksLikeRenderableItem)
+    }
+
+    private static func looksLikeRenderableItem(_ item: [String: Any]) -> Bool {
+        guard nonEmpty(stringValue(item["title"])) != nil else {
+            return false
+        }
+
+        return resolvedContentType(for: item) != nil
+            || item["resId"] != nil
+            || item["contentId"] != nil
+            || item["webinarId"] != nil
+            || item["inquiryRefNum"] != nil
+            || item["eventURL"] != nil
     }
 
     private static func parseItems(from items: [[String: Any]]) -> [FeedItem] {
