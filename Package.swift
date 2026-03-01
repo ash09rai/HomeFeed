@@ -14,15 +14,11 @@ let package = Package(
             targets: ["HomeFeed"]
         )
     ],
-    dependencies: [
-        .package(url: "https://github.com/ash09rai/ZoomableImageManager.git", from: "1.0.0")
-    ],
+    dependencies: [],
     targets: [
         .target(
             name: "HomeFeed",
-            dependencies: [
-                .product(name: "ZoomableImageManager", package: "ZoomableImageManager")
-            ],
+            dependencies: [],
             path: "HomeFeed",
             exclude: [
                 "Info.plist"

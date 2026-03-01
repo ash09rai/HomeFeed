@@ -1,10 +1,6 @@
 import Foundation
 import SwiftUI
 
-#if canImport(ZoomableImageManager)
-import ZoomableImageManager
-#endif
-
 public enum HomeFeedImageCachePolicy: Hashable, Sendable {
     case cacheEnabled
     case cacheDisabled(allowMemoryCache: Bool = false)
@@ -43,48 +39,13 @@ public extension View {
     }
 }
 
-#if canImport(ZoomableImageManager)
-private extension HomeFeedImageCachePolicy {
-    var zoomableImageRequestCachePolicy: ImageRequestCachePolicy {
-        switch self {
-        case .cacheEnabled:
-            return .cacheEnabled
-        case let .cacheDisabled(allowMemoryCache):
-            return .cacheDisabled(allowMemoryCache: allowMemoryCache)
-        }
-    }
-}
-#endif
-
 struct home_feed_managed_image_content_view: View {
     let urls: [URL]
     let integration: HomeFeedImageIntegration?
     let accent: Color
 
     var body: some View {
-        if let integration, !urls.isEmpty {
-            managedImageBody(integration: integration)
-        } else {
-            home_feed_remote_image_fallback_view(url: urls.first, accent: accent)
-        }
-    }
-
-    @ViewBuilder
-    private func managedImageBody(integration: HomeFeedImageIntegration) -> some View {
-        #if canImport(ZoomableImageManager)
-        ImagePagerView(
-            urls: urls,
-            requestBuilder: integration.requestBuilder,
-            userScopeId: integration.userScopeId(),
-            cachePolicyResolver: { url in
-                integration.cachePolicyResolver(url).zoomableImageRequestCachePolicy
-            }
-        ) {
-            home_feed_remote_image_placeholder_view(accent: accent)
-        }
-        #else
         home_feed_remote_image_fallback_view(url: urls.first, accent: accent)
-        #endif
     }
 }
 
