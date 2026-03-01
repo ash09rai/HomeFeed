@@ -41,6 +41,28 @@ public final class HomeFeedConfigParser {
         "action"
     ]
 
+    private static let knownHeaderParameters: Set<String> = [
+        "title",
+        "subtitle",
+        "titleColor",
+        "subtitleColor"
+    ]
+
+    private static let knownThemeParameters: Set<String> = [
+        "backgroundImage",
+        "backgroundColor",
+        "primaryColor",
+        "secondaryColor"
+    ]
+
+    private static let knownCtaParameters: Set<String> = [
+        "actionType",
+        "actionName",
+        "title",
+        "text",
+        "position"
+    ]
+
     public init() {}
 
     public func parse(data: Data) throws -> HomeConfig {
@@ -68,15 +90,24 @@ public final class HomeFeedConfigParser {
 
         let sectionType = stringValue(section["section_type"]) ?? "unknown"
         let endpoint = stringValue(section["endpoint"])
+        let header = parseHeader(from: section["header"])
         let supportedContents: [ContentType] = (section["supportedContents"] as? [Any] ?? []).compactMap { value in
             guard let parsed = stringValue(value) else {
                 return nil
             }
             return ContentType(rawValue: parsed)
         }
+        let theme = parseTheme(from: section["theme"])
+        let analytics = stringValue(section["analytics"])
         let showSection = boolValue(section["showSection"]) ?? true
         let groupCount = intValue(section["groupCount"])
         let cardCount = intValue(section["cardCount"])
+        let sectionHeaderCta = parseCta(from: section["sectionHeaderCta"])
+        let footerCta = parseCta(from: section["footerCta"]) ?? parseCta(from: section["sectionFooterCta"])
+        let contentHeaderCta = parseCta(from: section["contentHeaderCta"])
+        let contentFooterCta = parseCta(from: section["contentFooterCta"])
+        let sectionStyle = stringValue(section["sectionStyle"])
+        let placement = stringValue(section["placement"])
 
         let rawContainers = section["containers"] as? [[String: Any]] ?? []
         var unknownContainerKeys: Set<String> = []
@@ -106,6 +137,9 @@ public final class HomeFeedConfigParser {
         }
 
         var unknownBehaviourKeys: Set<String> = []
+        var unknownHeaderKeys: Set<String> = []
+        var unknownThemeKeys: Set<String> = []
+        var unknownCtaKeys: Set<String> = []
         let behaviour: BehaviourRule?
         if let rawBehaviour = section["behaviour"] as? [String: Any] {
             let unknown = Set(rawBehaviour.keys).subtracting(Self.knownBehaviourParameters)
@@ -128,7 +162,35 @@ public final class HomeFeedConfigParser {
             behaviour = nil
         }
 
-        let unknownNested = unknownContainerKeys.union(unknownBehaviourKeys)
+        if let rawHeader = section["header"] as? [String: Any] {
+            let unknown = Set(rawHeader.keys).subtracting(Self.knownHeaderParameters)
+            unknownHeaderKeys.formUnion(unknown.map { "header.\($0)" })
+        }
+
+        if let rawTheme = section["theme"] as? [String: Any] {
+            let unknown = Set(rawTheme.keys).subtracting(Self.knownThemeParameters)
+            unknownThemeKeys.formUnion(unknown.map { "theme.\($0)" })
+        }
+
+        [
+            ("sectionHeaderCta", section["sectionHeaderCta"]),
+            ("footerCta", section["footerCta"]),
+            ("sectionFooterCta", section["sectionFooterCta"]),
+            ("contentHeaderCta", section["contentHeaderCta"]),
+            ("contentFooterCta", section["contentFooterCta"])
+        ].forEach { prefix, rawValue in
+            guard let rawCta = rawValue as? [String: Any] else {
+                return
+            }
+            let unknown = Set(rawCta.keys).subtracting(Self.knownCtaParameters)
+            unknownCtaKeys.formUnion(unknown.map { "\(prefix).\($0)" })
+        }
+
+        let unknownNested = unknownContainerKeys
+            .union(unknownBehaviourKeys)
+            .union(unknownHeaderKeys)
+            .union(unknownThemeKeys)
+            .union(unknownCtaKeys)
         if !unknownNested.isEmpty {
             throw ConfigurationValidationError.unknownParameters(unknownNested.sorted())
         }
@@ -139,10 +201,19 @@ public final class HomeFeedConfigParser {
             rank: rank,
             sectionType: sectionType,
             endpoint: endpoint,
+            header: header,
             supportedContents: supportedContents,
+            theme: theme,
+            analytics: analytics,
             showSection: showSection,
             groupCount: groupCount,
             cardCount: cardCount,
+            sectionHeaderCta: sectionHeaderCta,
+            footerCta: footerCta,
+            contentHeaderCta: contentHeaderCta,
+            contentFooterCta: contentFooterCta,
+            sectionStyle: sectionStyle,
+            placement: placement,
             containers: containers,
             behaviour: behaviour,
             declaredParameters: Set(section.keys),
@@ -207,5 +278,43 @@ public final class HomeFeedConfigParser {
         default:
             return ScrollDirection.vertical.rawValue
         }
+    }
+
+    private func parseHeader(from value: Any?) -> SectionHeaderMeta? {
+        guard let rawHeader = value as? [String: Any] else {
+            return nil
+        }
+
+        return SectionHeaderMeta(
+            title: stringValue(rawHeader["title"]),
+            subtitle: stringValue(rawHeader["subtitle"]),
+            titleColorHex: stringValue(rawHeader["titleColor"]),
+            subtitleColorHex: stringValue(rawHeader["subtitleColor"])
+        )
+    }
+
+    private func parseTheme(from value: Any?) -> SectionThemeMeta? {
+        guard let rawTheme = value as? [String: Any] else {
+            return nil
+        }
+
+        return SectionThemeMeta(
+            backgroundImageURL: stringValue(rawTheme["backgroundImage"]),
+            primaryColorHex: stringValue(rawTheme["primaryColor"]) ?? stringValue(rawTheme["backgroundColor"]),
+            secondaryColorHex: stringValue(rawTheme["secondaryColor"]) ?? stringValue(rawTheme["backgroundColor"])
+        )
+    }
+
+    private func parseCta(from value: Any?) -> SectionCtaMeta? {
+        guard let rawCta = value as? [String: Any] else {
+            return nil
+        }
+
+        return SectionCtaMeta(
+            actionType: stringValue(rawCta["actionType"]),
+            actionName: stringValue(rawCta["actionName"]),
+            text: stringValue(rawCta["text"]) ?? stringValue(rawCta["title"]),
+            position: stringValue(rawCta["position"])
+        )
     }
 }

@@ -8,16 +8,86 @@ public struct HomeConfig: Equatable, Sendable, Codable {
     }
 }
 
+public struct SectionHeaderMeta: Equatable, Sendable, Codable {
+    public var title: String?
+    public var subtitle: String?
+    public var titleColorHex: String?
+    public var subtitleColorHex: String?
+
+    public init(
+        title: String? = nil,
+        subtitle: String? = nil,
+        titleColorHex: String? = nil,
+        subtitleColorHex: String? = nil
+    ) {
+        self.title = title
+        self.subtitle = subtitle
+        self.titleColorHex = titleColorHex
+        self.subtitleColorHex = subtitleColorHex
+    }
+}
+
+public struct SectionThemeMeta: Equatable, Sendable, Codable {
+    public var backgroundImageURL: String?
+    public var primaryColorHex: String?
+    public var secondaryColorHex: String?
+
+    public init(
+        backgroundImageURL: String? = nil,
+        primaryColorHex: String? = nil,
+        secondaryColorHex: String? = nil
+    ) {
+        self.backgroundImageURL = backgroundImageURL
+        self.primaryColorHex = primaryColorHex
+        self.secondaryColorHex = secondaryColorHex
+    }
+}
+
+public struct SectionCtaMeta: Equatable, Sendable, Codable {
+    public var actionType: String?
+    public var actionName: String?
+    public var text: String?
+    public var position: String?
+
+    public init(
+        actionType: String? = nil,
+        actionName: String? = nil,
+        text: String? = nil,
+        position: String? = nil
+    ) {
+        self.actionType = actionType
+        self.actionName = actionName
+        self.text = text
+        self.position = position
+    }
+
+    public var trimmedText: String? {
+        guard let text = text?.trimmingCharacters(in: .whitespacesAndNewlines), !text.isEmpty else {
+            return nil
+        }
+        return text
+    }
+}
+
 public struct SectionMeta: Identifiable, Equatable, Sendable, Codable {
     public let id: String
     public let originalOrder: Int
     public var rank: Int
     public var sectionType: String
     public var endpoint: String?
+    public var header: SectionHeaderMeta?
     public var supportedContents: [ContentType]
+    public var theme: SectionThemeMeta?
+    public var analytics: String?
     public var showSection: Bool
     public var groupCount: Int?
     public var cardCount: Int?
+    public var sectionHeaderCta: SectionCtaMeta?
+    public var footerCta: SectionCtaMeta?
+    public var contentHeaderCta: SectionCtaMeta?
+    public var contentFooterCta: SectionCtaMeta?
+    public var sectionStyle: String?
+    public var placement: String?
     public var containers: [ContainerMeta]
     public var behaviour: BehaviourRule?
     public var declaredParameters: Set<String>
@@ -29,10 +99,19 @@ public struct SectionMeta: Identifiable, Equatable, Sendable, Codable {
         rank: Int,
         sectionType: String,
         endpoint: String?,
+        header: SectionHeaderMeta? = nil,
         supportedContents: [ContentType],
+        theme: SectionThemeMeta? = nil,
+        analytics: String? = nil,
         showSection: Bool,
         groupCount: Int?,
         cardCount: Int?,
+        sectionHeaderCta: SectionCtaMeta? = nil,
+        footerCta: SectionCtaMeta? = nil,
+        contentHeaderCta: SectionCtaMeta? = nil,
+        contentFooterCta: SectionCtaMeta? = nil,
+        sectionStyle: String? = nil,
+        placement: String? = nil,
         containers: [ContainerMeta],
         behaviour: BehaviourRule?,
         declaredParameters: Set<String>,
@@ -43,14 +122,47 @@ public struct SectionMeta: Identifiable, Equatable, Sendable, Codable {
         self.rank = rank
         self.sectionType = sectionType
         self.endpoint = endpoint
+        self.header = header
         self.supportedContents = supportedContents
+        self.theme = theme
+        self.analytics = analytics
         self.showSection = showSection
         self.groupCount = groupCount
         self.cardCount = cardCount
+        self.sectionHeaderCta = sectionHeaderCta
+        self.footerCta = footerCta
+        self.contentHeaderCta = contentHeaderCta
+        self.contentFooterCta = contentFooterCta
+        self.sectionStyle = sectionStyle
+        self.placement = placement
         self.containers = containers
         self.behaviour = behaviour
         self.declaredParameters = declaredParameters
         self.unknownParameters = unknownParameters
+    }
+
+    public var displayTitle: String {
+        if let title = header?.title?.trimmingCharacters(in: .whitespacesAndNewlines), !title.isEmpty {
+            return title
+        }
+        return sectionType.replacingOccurrences(of: "_", with: " ").capitalized
+    }
+
+    public var displaySubtitle: String? {
+        guard let subtitle = header?.subtitle?.trimmingCharacters(in: .whitespacesAndNewlines), !subtitle.isEmpty else {
+            return nil
+        }
+        return subtitle
+    }
+
+    public var preferredFooterCta: SectionCtaMeta? {
+        if footerCta?.trimmedText != nil {
+            return footerCta
+        }
+        if contentFooterCta?.trimmedText != nil {
+            return contentFooterCta
+        }
+        return nil
     }
 }
 

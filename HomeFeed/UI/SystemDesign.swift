@@ -147,6 +147,16 @@ public final class SystemDesign {
     public static func color(_ token: Palette) -> Color {
         token.color
     }
+
+    public static func color(hex: String?, fallback: Color) -> Color {
+        guard
+            let hex,
+            let parsed = parsedColor(from: hex)
+        else {
+            return fallback
+        }
+        return parsed
+    }
     
     public static var buttonForegroundColor: Color {
         return Color(red: 0, green: 106/255, blue: 199/255)
@@ -177,5 +187,32 @@ public final class SystemDesign {
         default:
             return Color(red: 0.2, green: 0.2, blue: 0.2)
         }
+    }
+
+    private static func parsedColor(from hex: String) -> Color? {
+        let normalized = hex
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+            .replacingOccurrences(of: "#", with: "")
+
+        guard normalized.count == 6 || normalized.count == 8 else {
+            return nil
+        }
+
+        guard let value = UInt64(normalized, radix: 16) else {
+            return nil
+        }
+
+        if normalized.count == 6 {
+            let red = Double((value & 0xFF0000) >> 16) / 255.0
+            let green = Double((value & 0x00FF00) >> 8) / 255.0
+            let blue = Double(value & 0x0000FF) / 255.0
+            return Color(red: red, green: green, blue: blue)
+        }
+
+        let red = Double((value & 0xFF000000) >> 24) / 255.0
+        let green = Double((value & 0x00FF0000) >> 16) / 255.0
+        let blue = Double((value & 0x0000FF00) >> 8) / 255.0
+        let alpha = Double(value & 0x000000FF) / 255.0
+        return Color(red: red, green: green, blue: blue, opacity: alpha)
     }
 }

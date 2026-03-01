@@ -860,9 +860,14 @@ final class HomeFeedTests: XCTestCase {
     func testUpdatedMockConfigParsesWithKnownParameters() throws {
         let data = try Data(contentsOf: URL(fileURLWithPath: "/Users/ashishrai/Desktop/Projects/Personal Frameworks/HomeFeed/HomeFeed/Mocks/MockHomeFeedConfig.json"))
         let config = try HomeFeedConfigParser().parse(data: data)
+        let section = try XCTUnwrap(config.sections.first(where: { $0.sectionType == "last_activity" }))
 
         XCTAssertFalse(config.sections.isEmpty)
-        XCTAssertTrue(config.sections.contains(where: { $0.sectionType == "last_activity" }))
+        XCTAssertEqual(section.displayTitle, "Continue with")
+        XCTAssertEqual(section.header?.titleColorHex, "#5A5B66")
+        XCTAssertEqual(section.theme?.primaryColorHex, "#E0F1FF")
+        XCTAssertEqual(section.sectionHeaderCta?.text, "View More")
+        XCTAssertNil(section.preferredFooterCta)
     }
 
     func testCardTypeContentTypeViewsRenderAllCombinations() {
