@@ -133,12 +133,7 @@ public final class SystemDesign {
     }
 
     public static func font(_ token: Typography) -> Font {
-        #if canImport(UIKit)
-        if UIFont(name: token.fontName, size: token.pointSize) != nil {
-            return .custom(token.fontName, size: token.pointSize)
-        }
-        #endif
-        return .system(size: token.pointSize)
+        return .custom(token.fontName, size: token.pointSize)
     }
     
     public static func lineSpacing(_ token: Typography) -> CGFloat {

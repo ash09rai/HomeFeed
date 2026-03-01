@@ -2,39 +2,15 @@ import SwiftUI
 
 struct CompactHeightUpcomingWebinarView: View {
     let item: FeedItem
+    let container: ContainerMeta?
+
+    init(item: FeedItem, container: ContainerMeta? = nil) {
+        self.item = item
+        self.container = container
+    }
 
     var body: some View {
-        let cardShape = RoundedRectangle(cornerRadius: SystemDesign.CornerRadius.card, style: .continuous)
-
-        HStack(alignment: .top, spacing: 12) {
-            CalendarView()
-                .frame(width: 70, height: 70)
-
-            VStack(alignment: .leading, spacing: 4) {
-                ContentLabel(contentType: item.contentType)
-                    .frame(height: 16)
-                CardTitleLabelView(cardTitle: item.title)
-                Text(item.eventLocation ?? "")
-                    .font(SystemDesign.font(.location))
-                    .foregroundStyle(SystemDesign.color(.location))
-                    .frame(height: 19)
-
-                Spacer()
-                HStack(spacing: 20) {
-                    RegisteredButtonView()
-                    FullTextButtonView()
-                }
-                .padding(.top, 12)
-                .frame(height: 22)
-            }
-        }
-        .padding(.all, 12)
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-        .background(SystemDesign.color(.surface), in: cardShape)
-        .overlay(
-            cardShape
-                .stroke(SystemDesign.accent(for: .conference).opacity(0.2), lineWidth: SystemDesign.Border.thin)
-        )
+        home_feed_event_card_view(item: item, cardType: .compactHeight, container: container)
     }
 }
 

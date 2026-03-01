@@ -145,7 +145,7 @@ struct CompactHeightDocumentImageView: View {
         home_feed_managed_image_content_view(
             urls: resolvedURLs,
             integration: imageIntegration,
-            accent: SystemDesign.accent(for: .document)
+            accent: SystemDesign.accent(for: item.contentType)
         )
         .clipShape(shape)
         .overlay(

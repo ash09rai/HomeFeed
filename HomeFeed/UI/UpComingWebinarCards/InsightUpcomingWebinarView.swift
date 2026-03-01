@@ -2,53 +2,15 @@ import SwiftUI
 
 struct InsightUpcomingWebinarView: View {
     let item: FeedItem
+    let container: ContainerMeta?
+
+    init(item: FeedItem, container: ContainerMeta? = nil) {
+        self.item = item
+        self.container = container
+    }
 
     var body: some View {
-        let cardShape = RoundedRectangle(cornerRadius: SystemDesign.CornerRadius.card, style: .continuous)
-
-        HStack(alignment: .top, spacing: 8) {
-            CalendarView()
-                .frame(width: 70, height: 70)
-
-            VStack(alignment: .leading, spacing: 8) {
-                ContentLabel(contentType: item.contentType)
-                    .frame(height: 16)
-
-                CardTitleLabelView(cardTitle: item.title)
-
-                if let location = item.eventLocation, !location.isEmpty {
-                    Text(location)
-                        .font(SystemDesign.font(.location))
-                        .foregroundStyle(SystemDesign.color(.location))
-                }
-
-                if let eventTime = item.eventTime, !eventTime.isEmpty {
-                    Text(eventTime)
-                        .font(SystemDesign.font(.location))
-                        .foregroundStyle(SystemDesign.color(.location))
-                }
-
-                if let eventSummary = item.summary, !eventSummary.isEmpty {
-                    Text(eventSummary)
-                        .font(SystemDesign.font(.cardDescription))
-                        .foregroundStyle(SystemDesign.color(.cardDescription))
-                }
-                Spacer()
-                HStack(spacing: 20) {
-                    RegisteredButtonView()
-                    FullTextButtonView()
-                        .frame(height: 22)
-                }
-            }
-            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-        }
-        .padding(.all, 16)
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-        .background(SystemDesign.color(.surface), in: cardShape)
-        .overlay(
-            cardShape
-                .stroke(.white, lineWidth: SystemDesign.Border.thin)
-        )
+        home_feed_event_card_view(item: item, cardType: .insight, container: container)
     }
 }
 

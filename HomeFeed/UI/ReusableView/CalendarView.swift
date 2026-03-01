@@ -10,6 +10,32 @@ import SwiftUI
 struct CalendarView: View {
     var startDate: Date?
     var endDate: Date?
+
+    private static let monthFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.dateFormat = "MMM"
+        return formatter
+    }()
+
+    private static let dayFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.dateFormat = "d"
+        return formatter
+    }()
+
+    private var resolvedDate: Date {
+        startDate ?? endDate ?? Date()
+    }
+
+    private var monthText: String {
+        Self.monthFormatter.string(from: resolvedDate).uppercased()
+    }
+
+    private var dayText: String {
+        Self.dayFormatter.string(from: resolvedDate)
+    }
     
     var body: some View {
         ZStack {
@@ -38,10 +64,10 @@ struct CalendarView: View {
     var calendarView: some View {
         ZStack(alignment: .center) {
             VStack(alignment: .center) {
-                Text("Jan")
+                Text(monthText)
                     .font(SystemDesign.font(SystemDesign.Typography.dateMonth))
                     .foregroundStyle(Color.white)
-                Text("8")
+                Text(dayText)
                     .font(SystemDesign.font(SystemDesign.Typography.dateDay))
                     .foregroundStyle(Color.white)
             }

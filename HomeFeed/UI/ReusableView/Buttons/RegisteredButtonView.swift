@@ -8,11 +8,12 @@
 import SwiftUI
 
 struct RegisteredButtonView: View {
+    var buttonText: String = "Registered"
     @State private var typography: SystemDesign.Typography = .primaryButton
     
     var body: some View {
         Label {
-            Text("Registered")
+            Text(buttonText)
                 .foregroundStyle(typography.foregroundColor)
                 .font(SystemDesign.font(typography))
         } icon: {
