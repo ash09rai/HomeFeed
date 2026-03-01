@@ -10,6 +10,7 @@ struct CompactWidthDocumentView: View {
             if item.showImage, (!item.imageURLs.isEmpty || item.imageURL != nil) {
                 CompactHeightDocumentImageView(item: item, showRadius: false)
                     .frame(width: .infinity, height: 94)
+                    .clipped()
             }
             
             VStack(alignment: .leading, spacing: 12) {

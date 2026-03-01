@@ -11,6 +11,7 @@ struct TopThumbnailDocumentView: View {
             if item.shouldShowImage {
                 CompactHeightDocumentImageView(item: item, showRadius: false)
                     .frame(width: .infinity, height: 180)
+                    .clipped()
             }
             CardTitleLabelView(cardTitle: item.title)
                 .padding(.horizontal, 16)

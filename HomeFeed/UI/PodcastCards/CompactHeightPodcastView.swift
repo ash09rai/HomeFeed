@@ -10,12 +10,47 @@ struct CompactHeightPodcastView: View {
     }
 
     var body: some View {
-        compact_height_podcast_view(item: item, container: container)
+        let cardShape = RoundedRectangle(cornerRadius: SystemDesign.CornerRadius.card, style: .continuous)
+
+        VStack(alignment: .leading, spacing: 8) {
+            HStack(spacing: 8) {
+                CardTitleLabelView(cardTitle: item.title)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+
+                if item.showImage, (!item.imageURLs.isEmpty || item.imageURL != nil) {
+                    CompactHeightDocumentImageView(item: item)
+                        .frame(width: 116, height: 67)
+                        .clipped()
+                }
+            }
+
+            Spacer()
+            
+            HStack(alignment: .center, spacing: 8) {
+                if let publishedDate = item.publishedDate {
+                    PublishedDateLabelView(dateText: publishedDate)
+                }
+                Spacer()
+                SaveButton(handler: SaveHandler())
+                PlayButtonView(handler: PlayHandler())
+            }
+            .frame(height: 44)
+        }
+        .padding([.top, .leading], 16)
+        .padding(.trailing, 12)
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+        .background(SystemDesign.color(.surface), in: cardShape)
+        .overlay(
+            cardShape
+                .stroke(SystemDesign.accent(for: .document).opacity(0.2), lineWidth: SystemDesign.Border.thin)
+        )
     }
 }
 
-#Preview {
-    CompactHeightPodcastView(item: content_card_preview_item.podcast)
-        .frame(width: 343, height: 128)
-        .previewLayout(.sizeThatFits)
+struct CompactHeightPodcastView_Previews: PreviewProvider {
+    static var previews: some View {
+        CompactHeightPodcastView(item: content_card_preview_item.podcast)
+            .frame(width: 343, height: 136)
+            .previewLayout(.sizeThatFits)
+    }
 }

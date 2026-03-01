@@ -48,7 +48,7 @@ struct TopThumbnailInquiryView: View {
         .background(SystemDesign.color(.surface), in: cardShape)
         .overlay(
             cardShape
-                .stroke(.white, lineWidth: SystemDesign.Border.thin)
+                .stroke(SystemDesign.accent(for: .conference).opacity(0.2), lineWidth: SystemDesign.Border.thin)
         )
     }
 }

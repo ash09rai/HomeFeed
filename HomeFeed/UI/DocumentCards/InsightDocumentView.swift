@@ -2,12 +2,6 @@ import SwiftUI
 
 struct InsightDocumentView: View {
     let item: FeedItem
-    let container: ContainerMeta?
-
-    init(item: FeedItem, container: ContainerMeta? = nil) {
-        self.item = item
-        self.container = container
-    }
 
     var body: some View {
         let cardShape = RoundedRectangle(cornerRadius: SystemDesign.CornerRadius.card, style: .continuous)
@@ -16,6 +10,7 @@ struct InsightDocumentView: View {
             if item.showImage, (!item.imageURLs.isEmpty || item.imageURL != nil) {
                 CompactHeightDocumentImageView(item: item, showRadius: false)
                     .frame(width: .infinity, height: 180)
+                    .clipped()
             }
             CardTitleLabelView(cardTitle: item.title)
                 .padding(.horizontal, 16)

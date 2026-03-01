@@ -14,6 +14,7 @@ struct CompactHeightDocumentView: View {
                 if item.showImage, (!item.imageURLs.isEmpty || item.imageURL != nil) {
                     CompactHeightDocumentImageView(item: item)
                         .frame(width: 116, height: 64)
+                        .clipped()
                 }
             }
 

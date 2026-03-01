@@ -49,3 +49,6 @@ struct CompactHeightConferenceView_Previews: PreviewProvider {
             .previewLayout(.sizeThatFits)
     }
 }
+
+@ViewBuilder
+
