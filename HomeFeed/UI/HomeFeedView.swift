@@ -1,12 +1,12 @@
 import SwiftUI
 
 public struct HomeFeedView: View {
-    @ObservedObject private var viewModel: HomeFeedViewModel
+    @ObservedObject private var viewModel: FeedViewModel
     private let showsSkippedDebug: Bool
     private let imageIntegration: HomeFeedImageIntegration?
 
     public init(
-        viewModel: HomeFeedViewModel,
+        viewModel: FeedViewModel,
         showsSkippedDebug: Bool = false,
         imageIntegration: HomeFeedImageIntegration? = nil
     ) {
@@ -160,7 +160,7 @@ private struct section_header_row_view: View {
     }
 
     private var titleColor: Color {
-        SystemDesign.color(hex: meta.header?.titleColorHex, fallback: SystemDesign.color(.cardTitle))
+        SystemDesign.color(hex: meta.header?.titleColorHex, fallback: SystemDesign.color(.sectionTitle))
     }
 
     private var subtitleColor: Color {

@@ -23,7 +23,7 @@ public struct HomeFeedCallbacks {
     }
 }
 
-public final class HomeFeedViewModel: ObservableObject {
+public final class FeedViewModel: ObservableObject {
     @Published public private(set) var sections: [FeedSectionState] = []
     @Published public private(set) var skippedSections: [FeedSectionState] = []
     @Published public private(set) var isLoading: Bool = false
