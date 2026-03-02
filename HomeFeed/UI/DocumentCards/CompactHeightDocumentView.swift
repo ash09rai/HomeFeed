@@ -14,6 +14,7 @@ struct CompactHeightDocumentView: View {
     }
 }
 
+#if DEBUG
 struct CompactHeightDocumentView_Previews: PreviewProvider {
     static var previews: some View {
         CompactHeightDocumentView(item: content_card_preview_item.document)
@@ -21,3 +22,4 @@ struct CompactHeightDocumentView_Previews: PreviewProvider {
             .previewLayout(.sizeThatFits)
     }
 }
+#endif

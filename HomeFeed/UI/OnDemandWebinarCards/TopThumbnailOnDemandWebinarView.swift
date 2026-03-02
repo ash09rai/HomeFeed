@@ -14,6 +14,7 @@ struct TopThumbnailOnDemandWebinarView: View {
     }
 }
 
+#if DEBUG
 struct TopThumbnailOnDemandWebinarView_Previews: PreviewProvider {
     static var previews: some View {
         TopThumbnailOnDemandWebinarView(item: content_card_preview_item.on_demand_webinar)
@@ -21,3 +22,4 @@ struct TopThumbnailOnDemandWebinarView_Previews: PreviewProvider {
             .previewLayout(.sizeThatFits)
     }
 }
+#endif

@@ -14,6 +14,7 @@ struct CompactWidthUpcomingWebinarView: View {
     }
 }
 
+#if DEBUG
 struct CompactWidthUpcomingWebinarView_Previews: PreviewProvider {
     static var previews: some View {
         CompactWidthUpcomingWebinarView(item: content_card_preview_item.upcoming_webinar)
@@ -21,3 +22,4 @@ struct CompactWidthUpcomingWebinarView_Previews: PreviewProvider {
             .previewLayout(.sizeThatFits)
     }
 }
+#endif

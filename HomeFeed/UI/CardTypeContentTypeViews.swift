@@ -345,7 +345,7 @@ struct home_feed_event_card_view: View {
     }
 }
 
-private struct home_feed_card_context {
+struct home_feed_card_context {
     let item: FeedItem
     let cardType: CardType
     let container: ContainerMeta?
@@ -397,7 +397,7 @@ private struct home_feed_card_context {
     }
 }
 
-private struct home_feed_card_chrome<Content: View>: View {
+struct home_feed_card_chrome<Content: View>: View {
     let accent: Color
     let minHeight: CGFloat
     let preferredWidth: CGFloat?
@@ -432,7 +432,7 @@ private struct home_feed_card_chrome<Content: View>: View {
     }
 }
 
-private struct home_feed_media_copy_block_view: View {
+struct home_feed_media_copy_block_view: View {
     let item: FeedItem
     let showsSummary: Bool
     let titleLineLimit: Int
@@ -469,7 +469,7 @@ private struct home_feed_media_copy_block_view: View {
     }
 }
 
-private struct home_feed_media_image_container_view: View {
+struct home_feed_media_image_container_view: View {
     let item: FeedItem
     let container: ContainerMeta?
     let height: CGFloat
@@ -495,7 +495,7 @@ private struct home_feed_media_image_container_view: View {
     }
 }
 
-private struct home_feed_gallery_indicator_view: View {
+struct home_feed_gallery_indicator_view: View {
     var body: some View {
         Text("Gallery")
             .font(SystemDesign.font(.cardContentType))
@@ -506,7 +506,7 @@ private struct home_feed_gallery_indicator_view: View {
     }
 }
 
-private struct home_feed_media_action_bar_view: View {
+struct home_feed_media_action_bar_view: View {
     let item: FeedItem
 
     var body: some View {
@@ -534,12 +534,12 @@ private struct home_feed_media_action_bar_view: View {
     }
 }
 
-private enum home_feed_media_secondary_action {
+enum home_feed_media_secondary_action {
     case listen
     case play
 }
 
-private struct home_feed_calendar_badge_view: View {
+struct home_feed_calendar_badge_view: View {
     let item: FeedItem
     let size: CGFloat
 
@@ -552,7 +552,7 @@ private struct home_feed_calendar_badge_view: View {
     }
 }
 
-private struct home_feed_event_copy_block_view: View {
+struct home_feed_event_copy_block_view: View {
     let item: FeedItem
     let showsSummary: Bool
     let titleLineLimit: Int
@@ -622,7 +622,7 @@ private struct home_feed_event_copy_block_view: View {
     }
 }
 
-private struct home_feed_meta_text_view: View {
+struct home_feed_meta_text_view: View {
     let text: String
     let lineLimit: Int
 
@@ -634,7 +634,7 @@ private struct home_feed_meta_text_view: View {
     }
 }
 
-private struct home_feed_event_action_bar_view: View {
+struct home_feed_event_action_bar_view: View {
     let item: FeedItem
     let vertical: Bool
 
@@ -681,7 +681,7 @@ private struct home_feed_event_action_bar_view: View {
     }
 }
 
-private func home_feed_parse_date(_ value: String?) -> Date? {
+func home_feed_parse_date(_ value: String?) -> Date? {
     guard let value = value?.trimmingCharacters(in: .whitespacesAndNewlines), !value.isEmpty else {
         return nil
     }

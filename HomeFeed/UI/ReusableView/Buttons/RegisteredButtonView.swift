@@ -23,6 +23,8 @@ struct RegisteredButtonView: View {
     }
 }
 
+#if DEBUG
 #Preview {
     RegisteredButtonView()
 }
+#endif

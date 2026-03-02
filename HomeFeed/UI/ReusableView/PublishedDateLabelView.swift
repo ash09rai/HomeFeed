@@ -20,6 +20,8 @@ struct PublishedDateLabelView: View {
     }
 }
 
+#if DEBUG
 #Preview {
     PublishedDateLabelView(dateText: "08 April 2025")
 }
+#endif

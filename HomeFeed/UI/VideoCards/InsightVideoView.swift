@@ -14,6 +14,7 @@ struct InsightVideoView: View {
     }
 }
 
+#if DEBUG
 struct InsightVideoView_Previews: PreviewProvider {
     static var previews: some View {
         InsightVideoView(item: content_card_preview_item.video)
@@ -21,3 +22,4 @@ struct InsightVideoView_Previews: PreviewProvider {
             .previewLayout(.sizeThatFits)
     }
 }
+#endif

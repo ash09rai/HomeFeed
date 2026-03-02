@@ -14,6 +14,7 @@ struct CompactWidthPodcastView: View {
     }
 }
 
+#if DEBUG
 struct CompactWidthPodcastView_Previews: PreviewProvider {
     static var previews: some View {
         CompactWidthPodcastView(item: content_card_preview_item.podcast)
@@ -21,3 +22,4 @@ struct CompactWidthPodcastView_Previews: PreviewProvider {
             .previewLayout(.sizeThatFits)
     }
 }
+#endif

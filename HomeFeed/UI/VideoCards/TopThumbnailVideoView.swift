@@ -14,6 +14,7 @@ struct TopThumbnailVideoView: View {
     }
 }
 
+#if DEBUG
 struct TopThumbnailVideoView_Previews: PreviewProvider {
     static var previews: some View {
         TopThumbnailVideoView(item: content_card_preview_item.video)
@@ -21,3 +22,4 @@ struct TopThumbnailVideoView_Previews: PreviewProvider {
             .previewLayout(.sizeThatFits)
     }
 }
+#endif

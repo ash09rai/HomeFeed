@@ -1,5 +1,6 @@
 import Foundation
 
+#if DEBUG
 enum content_card_preview_item {
     static let document = FeedItem(
         id: "preview-document",
@@ -147,3 +148,4 @@ enum content_card_preview_item {
         )
     )
 }
+#endif

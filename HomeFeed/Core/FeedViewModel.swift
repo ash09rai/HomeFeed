@@ -6,6 +6,7 @@ public struct HomeFeedCallbacks {
     public var onSectionSkipped: ((SectionMeta, SectionSkipReason) -> Void)?
     public var onSectionPartiallySupported: ((SectionMeta, [ContentType]) -> Void)?
     public var onBehaviourTriggered: ((SectionMeta, BehaviourRule) -> Void)?
+    public var onCardTapped: ((SectionMeta, FeedItem) -> Void)?
     public var onHomeFeedFailed: ((HomeFeedError) -> Void)?
 
     public init(
@@ -13,12 +14,14 @@ public struct HomeFeedCallbacks {
         onSectionSkipped: ((SectionMeta, SectionSkipReason) -> Void)? = nil,
         onSectionPartiallySupported: ((SectionMeta, [ContentType]) -> Void)? = nil,
         onBehaviourTriggered: ((SectionMeta, BehaviourRule) -> Void)? = nil,
+        onCardTapped: ((SectionMeta, FeedItem) -> Void)? = nil,
         onHomeFeedFailed: ((HomeFeedError) -> Void)? = nil
     ) {
         self.onConfigurationValidationFailed = onConfigurationValidationFailed
         self.onSectionSkipped = onSectionSkipped
         self.onSectionPartiallySupported = onSectionPartiallySupported
         self.onBehaviourTriggered = onBehaviourTriggered
+        self.onCardTapped = onCardTapped
         self.onHomeFeedFailed = onHomeFeedFailed
     }
 }
@@ -89,6 +92,37 @@ public final class FeedViewModel: ObservableObject {
         )
     }
 
+    public convenience init(
+        dataSource: HomeFeedDataSource,
+        capabilities: HomeFeedCapabilities,
+        chunkSize: Int = 2,
+        validator: HomeFeedCapabilityValidator = HomeFeedCapabilityValidator(),
+        callbacks: HomeFeedCallbacks = HomeFeedCallbacks(),
+        persistenceMode: HomeFeedPersistenceMode = .automatic,
+        runtime: HomeFeedRuntime = LiveHomeFeedRuntime()
+    ) throws {
+        let provider: HomeFeedNetworkingProvider
+
+        switch dataSource {
+        case let .api(networkingProvider):
+            provider = networkingProvider
+        #if DEBUG || HOMEFEED_QA
+        case let .mock(configuration):
+            provider = try MockHomeFeedNetworkingProvider(bundleConfiguration: configuration)
+        #endif
+        }
+
+        self.init(
+            networkingProvider: provider,
+            capabilities: capabilities,
+            chunkSize: chunkSize,
+            validator: validator,
+            callbacks: callbacks,
+            persistenceMode: persistenceMode,
+            runtime: runtime
+        )
+    }
+
     public func updateCallbacks(_ callbacks: HomeFeedCallbacks) {
         self.callbacks = callbacks
     }
@@ -119,6 +153,10 @@ public final class FeedViewModel: ObservableObject {
         }
 
         callbacks.onBehaviourTriggered?(result.0, result.1)
+    }
+
+    public func handleCardTap(_ item: FeedItem, in section: SectionMeta) {
+        callbacks.onCardTapped?(section, item)
     }
 
     private func bindUseCases() {
@@ -184,3 +222,5 @@ public final class FeedViewModel: ObservableObject {
         }
     }
 }
+
+public typealias HomeFeedViewModel = FeedViewModel

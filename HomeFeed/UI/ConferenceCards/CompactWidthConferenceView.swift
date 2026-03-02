@@ -14,6 +14,7 @@ struct CompactWidthConferenceView: View {
     }
 }
 
+#if DEBUG
 struct CompactWidthConferenceView_Previews: PreviewProvider {
     static var previews: some View {
         CompactWidthConferenceView(item: content_card_preview_item.conference)
@@ -21,3 +22,4 @@ struct CompactWidthConferenceView_Previews: PreviewProvider {
             .previewLayout(.sizeThatFits)
     }
 }
+#endif

@@ -37,6 +37,7 @@ struct PlayButtonView: View {
     }
 }
 
+#if DEBUG
 struct PlayButtonView_Previews: PreviewProvider {
     static var previews: some View {
         PlayButtonView(handler: PlayHandler())
@@ -45,3 +46,4 @@ struct PlayButtonView_Previews: PreviewProvider {
     }
 }
 
+#endif

@@ -39,6 +39,8 @@ struct ContentLabel: View {
     }
 }
 
+#if DEBUG
 #Preview {
     ContentLabel(contentType: .audio)
 }
+#endif

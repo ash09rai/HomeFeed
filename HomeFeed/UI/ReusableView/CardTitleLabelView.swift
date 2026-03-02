@@ -20,6 +20,8 @@ struct CardTitleLabelView: View {
     }
 }
 
+#if DEBUG
 #Preview {
     CardTitleLabelView(cardTitle: "Client Webinar: Managing Generative AI's Impact on Endpoint Management")
 }
+#endif

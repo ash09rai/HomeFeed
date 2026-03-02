@@ -14,6 +14,7 @@ struct TopThumbnailPodcastView: View {
     }
 }
 
+#if DEBUG
 struct TopThumbnailPodcastView_Previews: PreviewProvider {
     static var previews: some View {
         TopThumbnailPodcastView(item: content_card_preview_item.podcast)
@@ -21,3 +22,4 @@ struct TopThumbnailPodcastView_Previews: PreviewProvider {
             .previewLayout(.sizeThatFits)
     }
 }
+#endif

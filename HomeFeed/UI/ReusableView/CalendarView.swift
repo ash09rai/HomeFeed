@@ -76,6 +76,7 @@ struct CalendarView: View {
     }
 }
 
+#if DEBUG
 struct CalendarView_Previews: PreviewProvider {
     static var previews: some View {
         CalendarView()
@@ -83,3 +84,4 @@ struct CalendarView_Previews: PreviewProvider {
             .previewLayout(.sizeThatFits)
     }
 }
+#endif

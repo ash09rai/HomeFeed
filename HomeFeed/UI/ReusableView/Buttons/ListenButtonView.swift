@@ -38,6 +38,7 @@ struct ListenButtonView: View {
     }
 }
 
+#if DEBUG
 struct ListenButtonView_Previews: PreviewProvider {
     static var previews: some View {
         ListenButtonView(handler: ListenHandler())
@@ -45,3 +46,4 @@ struct ListenButtonView_Previews: PreviewProvider {
         .previewLayout(.sizeThatFits)
     }
 }
+#endif

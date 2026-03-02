@@ -18,6 +18,8 @@ struct FullTextButtonView: View {
     }
 }
 
+#if DEBUG
 #Preview {
     FullTextButtonView()
 }
+#endif

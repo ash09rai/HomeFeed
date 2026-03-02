@@ -14,6 +14,7 @@ struct CompactHeightPodcastView: View {
     }
 }
 
+#if DEBUG
 struct CompactHeightPodcastView_Previews: PreviewProvider {
     static var previews: some View {
         CompactHeightPodcastView(item: content_card_preview_item.podcast)
@@ -21,3 +22,4 @@ struct CompactHeightPodcastView_Previews: PreviewProvider {
             .previewLayout(.sizeThatFits)
     }
 }
+#endif

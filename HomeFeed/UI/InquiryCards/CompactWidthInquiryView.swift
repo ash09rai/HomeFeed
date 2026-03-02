@@ -14,6 +14,7 @@ struct CompactWidthInquiryView: View {
     }
 }
 
+#if DEBUG
 struct CompactWidthInquiryView_Previews: PreviewProvider {
     static var previews: some View {
         CompactWidthInquiryView(item: content_card_preview_item.inquiry)
@@ -21,3 +22,4 @@ struct CompactWidthInquiryView_Previews: PreviewProvider {
             .previewLayout(.sizeThatFits)
     }
 }
+#endif

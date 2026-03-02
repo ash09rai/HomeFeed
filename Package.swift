@@ -21,12 +21,12 @@ let package = Package(
             dependencies: [],
             path: "HomeFeed",
             exclude: [
-                "Info.plist"
+                "Info.plist",
+                "Mocks/MockHomeFeedConfig.json",
+                "Mocks/MockSectionResponse.json"
             ],
             resources: [
-                .process("Fonts"),
-                .copy("Mocks/MockHomeFeedConfig.json"),
-                .copy("Mocks/MockSectionResponse.json")
+                .process("Fonts")
             ]
         ),
         .testTarget(

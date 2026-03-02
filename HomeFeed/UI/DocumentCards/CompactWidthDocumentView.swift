@@ -14,6 +14,7 @@ struct CompactWidthDocumentView: View {
     }
 }
 
+#if DEBUG
 struct CompactWidthDocumentView_Previews: PreviewProvider {
     static var previews: some View {
         CompactWidthDocumentView(item: content_card_preview_item.document)
@@ -21,3 +22,4 @@ struct CompactWidthDocumentView_Previews: PreviewProvider {
             .previewLayout(.sizeThatFits)
     }
 }
+#endif

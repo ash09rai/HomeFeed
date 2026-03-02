@@ -26,7 +26,12 @@ public struct HomeFeedView: View {
                 }
 
                 ForEach(viewModel.sections) { section in
-                    section_view(section: section)
+                    section_view(
+                        section: section,
+                        onCardTapped: { item, meta in
+                            viewModel.handleCardTap(item, in: meta)
+                        }
+                    )
                 }
 
                 if showsSkippedDebug {
@@ -46,8 +51,17 @@ public struct HomeFeedView: View {
     }
 }
 
-private struct section_view: View {
+struct section_view: View {
     let section: FeedSectionState
+    let onCardTapped: ((FeedItem, SectionMeta) -> Void)?
+
+    init(
+        section: FeedSectionState,
+        onCardTapped: ((FeedItem, SectionMeta) -> Void)? = nil
+    ) {
+        self.section = section
+        self.onCardTapped = onCardTapped
+    }
 
     var body: some View {
         switch section.state {
@@ -61,7 +75,11 @@ private struct section_view: View {
                 case let .failed(message):
                     failed_section_content_view(message: message)
                 case let .loaded(data):
-                    loaded_section_content_view(meta: section.meta, data: data)
+                    loaded_section_content_view(
+                        meta: section.meta,
+                        data: data,
+                        onCardTapped: onCardTapped
+                    )
                 case .skipped:
                     EmptyView()
                 }
@@ -70,7 +88,7 @@ private struct section_view: View {
     }
 }
 
-private struct loading_section_content_view: View {
+struct loading_section_content_view: View {
     let meta: SectionMeta
 
     var body: some View {
@@ -91,7 +109,7 @@ private struct loading_section_content_view: View {
     }
 }
 
-private struct failed_section_content_view: View {
+struct failed_section_content_view: View {
     let message: String
 
     var body: some View {
@@ -101,20 +119,36 @@ private struct failed_section_content_view: View {
     }
 }
 
-private struct loaded_section_content_view: View {
+struct loaded_section_content_view: View {
     let meta: SectionMeta
     let data: SectionData
+    let onCardTapped: ((FeedItem, SectionMeta) -> Void)?
+
+    init(
+        meta: SectionMeta,
+        data: SectionData,
+        onCardTapped: ((FeedItem, SectionMeta) -> Void)? = nil
+    ) {
+        self.meta = meta
+        self.data = data
+        self.onCardTapped = onCardTapped
+    }
 
     var body: some View {
         VStack(alignment: .leading, spacing: SystemDesign.Spacing.md) {
             ForEach(Array(meta.containers.enumerated()), id: \.offset) { _, container in
-                container_list_view(container: container, items: data.items)
+                container_list_view(
+                    meta: meta,
+                    container: container,
+                    items: data.items,
+                    onCardTapped: onCardTapped
+                )
             }
         }
     }
 }
 
-private struct section_chrome_view<Content: View>: View {
+struct section_chrome_view<Content: View>: View {
     let meta: SectionMeta
     let content: () -> Content
 
@@ -152,7 +186,7 @@ private struct section_chrome_view<Content: View>: View {
     }
 }
 
-private struct section_header_row_view: View {
+struct section_header_row_view: View {
     let meta: SectionMeta
 
     private var headerCta: SectionCtaMeta? {
@@ -199,7 +233,7 @@ private struct section_header_row_view: View {
     }
 }
 
-private struct section_cta_label_view: View {
+struct section_cta_label_view: View {
     let cta: SectionCtaMeta
 
     var body: some View {
@@ -212,7 +246,7 @@ private struct section_cta_label_view: View {
     }
 }
 
-private struct section_background_fill_view: View {
+struct section_background_fill_view: View {
     let meta: SectionMeta
 
     private var backgroundURL: URL? {
@@ -286,7 +320,7 @@ private struct section_background_fill_view: View {
     }
 }
 
-private struct loading_container_list_view: View {
+struct loading_container_list_view: View {
     let container: ContainerMeta
     let placeholderCount: Int
 
@@ -322,9 +356,23 @@ private struct loading_container_list_view: View {
     }
 }
 
-private struct container_list_view: View {
+struct container_list_view: View {
+    let meta: SectionMeta
     let container: ContainerMeta
     let items: [FeedItem]
+    let onCardTapped: ((FeedItem, SectionMeta) -> Void)?
+
+    init(
+        meta: SectionMeta,
+        container: ContainerMeta,
+        items: [FeedItem],
+        onCardTapped: ((FeedItem, SectionMeta) -> Void)? = nil
+    ) {
+        self.meta = meta
+        self.container = container
+        self.items = items
+        self.onCardTapped = onCardTapped
+    }
 
     private var gridItems: [GridItem] {
         Array(
@@ -338,27 +386,36 @@ private struct container_list_view: View {
             ScrollView(.horizontal, showsIndicators: false) {
                 LazyHStack(spacing: SystemDesign.Spacing.md) {
                     ForEach(items) { item in
-                        card_type_content_type_view(cardType: container.cardType, item: item, container: container)
+                        tappableCard(for: item)
                     }
                 }
             }
         } else if container.layout == .grid {
             LazyVGrid(columns: gridItems, alignment: .leading, spacing: SystemDesign.Spacing.md) {
                 ForEach(items) { item in
-                    card_type_content_type_view(cardType: container.cardType, item: item, container: container)
+                    tappableCard(for: item)
                 }
             }
         } else {
             LazyVStack(alignment: .leading, spacing: SystemDesign.Spacing.md) {
                 ForEach(items) { item in
-                    card_type_content_type_view(cardType: container.cardType, item: item, container: container)
+                    tappableCard(for: item)
                 }
             }
         }
     }
+
+    @ViewBuilder
+    private func tappableCard(for item: FeedItem) -> some View {
+        card_type_content_type_view(cardType: container.cardType, item: item, container: container)
+            .contentShape(Rectangle())
+            .onTapGesture {
+                onCardTapped?(item, meta)
+            }
+    }
 }
 
-private struct loading_card_placeholder_view: View {
+struct loading_card_placeholder_view: View {
     let container: ContainerMeta
 
     var body: some View {
@@ -394,7 +451,7 @@ private struct loading_card_placeholder_view: View {
     }
 }
 
-private struct loading_card_metrics {
+struct loading_card_metrics {
     let width: CGFloat?
     let minHeight: CGFloat
     let imageHeight: CGFloat

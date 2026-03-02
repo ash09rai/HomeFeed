@@ -112,6 +112,10 @@ public final class HomeFeedRepositoryImpl: HomeFeedRepository {
         _ result: HomeFeedValidationResult,
         completion: @escaping () -> Void
     ) {
+        let existingStatesByID = Dictionary(
+            uniqueKeysWithValues: storeDataSource.currentSections().map { ($0.id, $0.state) }
+        )
+
         for partial in result.partiallySupportedSections {
             eventsSubject.send(.sectionPartiallySupported(partial.0, partial.1))
         }
@@ -128,7 +132,12 @@ public final class HomeFeedRepositoryImpl: HomeFeedRepository {
             return
         }
 
-        workingSections = result.validSections.map { FeedSectionState(meta: $0, state: .idle) }
+        workingSections = result.validSections.map { section in
+            FeedSectionState(
+                meta: section,
+                state: resolvedInitialState(for: section.id, existingStatesByID: existingStatesByID)
+            )
+        }
         storeDataSource.replace(sections: workingSections, skippedSections: skippedStates)
         executeChunk(from: 0, completion: completion)
     }
@@ -151,7 +160,7 @@ public final class HomeFeedRepositoryImpl: HomeFeedRepository {
         let endIndex = min(startIndex + chunkSize, workingSections.count)
         let chunk = Array(workingSections[startIndex..<endIndex])
         for section in chunk {
-            setState(for: section.id, state: .loading)
+            setLoadingStateIfNeeded(for: section.id)
         }
         storeDataSource.replaceSections(workingSections)
 
@@ -165,7 +174,7 @@ public final class HomeFeedRepositoryImpl: HomeFeedRepository {
                 }
 
                 for result in results {
-                    self.setState(for: result.sectionID, state: result.state)
+                    self.applyFetchedState(result.state, for: result.sectionID)
                     if case let .skipped(reason) = result.state,
                        let section = self.workingSections.first(where: { $0.id == result.sectionID })?.meta {
                         self.eventsSubject.send(.sectionSkipped(section, reason))
@@ -217,6 +226,48 @@ public final class HomeFeedRepositoryImpl: HomeFeedRepository {
             return
         }
         workingSections[index].state = state
+    }
+
+    private func resolvedInitialState(
+        for sectionID: String,
+        existingStatesByID: [String: SectionState]
+    ) -> SectionState {
+        guard let existingState = existingStatesByID[sectionID] else {
+            return .idle
+        }
+
+        switch existingState {
+        case .idle, .loading:
+            return .idle
+        case .loaded, .failed, .skipped:
+            return existingState
+        }
+    }
+
+    private func setLoadingStateIfNeeded(for sectionID: String) {
+        guard let index = workingSections.firstIndex(where: { $0.id == sectionID }) else {
+            return
+        }
+
+        switch workingSections[index].state {
+        case .loaded, .failed:
+            return
+        case .idle, .loading, .skipped:
+            workingSections[index].state = .loading
+        }
+    }
+
+    private func applyFetchedState(_ fetchedState: SectionState, for sectionID: String) {
+        guard let index = workingSections.firstIndex(where: { $0.id == sectionID }) else {
+            return
+        }
+
+        if case .loaded = workingSections[index].state,
+           case .failed = fetchedState {
+            return
+        }
+
+        workingSections[index].state = fetchedState
     }
 }
 

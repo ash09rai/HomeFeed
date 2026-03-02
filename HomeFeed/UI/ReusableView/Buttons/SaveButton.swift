@@ -38,6 +38,7 @@ struct SaveButton: View {
     }
 }
 
+#if DEBUG
 struct SaveButton_Previews: PreviewProvider {
     static var previews: some View {
         SaveButton(handler: SaveHandler())
@@ -46,3 +47,4 @@ struct SaveButton_Previews: PreviewProvider {
     }
 }
 
+#endif

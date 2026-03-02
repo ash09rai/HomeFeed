@@ -14,6 +14,7 @@ struct TopThumbnailDocumentView: View {
     }
 }
 
+#if DEBUG
 struct TopThumbnailDocumentView_Previews: PreviewProvider {
     static var previews: some View {
         TopThumbnailDocumentView(item: content_card_preview_item.document)
@@ -21,3 +22,4 @@ struct TopThumbnailDocumentView_Previews: PreviewProvider {
             .previewLayout(.sizeThatFits)
     }
 }
+#endif

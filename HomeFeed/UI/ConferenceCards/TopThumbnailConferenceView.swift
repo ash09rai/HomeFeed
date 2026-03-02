@@ -14,6 +14,7 @@ struct TopThumbnailConferenceView: View {
     }
 }
 
+#if DEBUG
 struct TopThumbnailConferenceView_Previews: PreviewProvider {
     static var previews: some View {
         TopThumbnailConferenceView(item: content_card_preview_item.conference)
@@ -21,3 +22,4 @@ struct TopThumbnailConferenceView_Previews: PreviewProvider {
             .previewLayout(.sizeThatFits)
     }
 }
+#endif

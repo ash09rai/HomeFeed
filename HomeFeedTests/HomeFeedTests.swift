@@ -173,6 +173,29 @@ final class HomeFeedTests: XCTestCase {
         XCTAssertEqual(viewModel.sections.count, 3)
     }
 
+    func testViewModelSupportsMockDataSourceMode() throws {
+        let viewModel = try HomeFeedViewModel(
+            dataSource: .mock(
+                HomeFeedMockDataSourceConfiguration(
+                    configFileName: fixtureURL(name: "MockHomeFeedConfig.json").path,
+                    sectionFileName: fixtureURL(name: "MockSectionResponse.json").path,
+                    configDelay: 0.01,
+                    sectionDelay: 0.01
+                )
+            ),
+            capabilities: .default,
+            persistenceMode: .inMemoryOnly
+        )
+
+        let done = expectation(description: "mock datasource load complete")
+        observeLoadingCompletion(viewModel: viewModel, done: done)
+        viewModel.load()
+        wait(for: [done], timeout: 2.0)
+
+        XCTAssertFalse(viewModel.sections.isEmpty)
+        XCTAssertEqual(viewModel.sections.first?.meta.sectionType, "last_activity")
+    }
+
     func testViewModelEmitsNoRenderableSectionsWhenAllSectionsSkipped() throws {
         let json = """
         [
@@ -543,7 +566,11 @@ final class HomeFeedTests: XCTestCase {
             delay: 0.05
         )
 
-        let viewModel = HomeFeedViewModel(networkingProvider: provider, capabilities: .default)
+        let viewModel = HomeFeedViewModel(
+            networkingProvider: provider,
+            capabilities: .default,
+            persistenceMode: .inMemoryOnly
+        )
 
         let sawLoading = expectation(description: "saw loading")
         let sawLoaded = expectation(description: "saw loaded")
@@ -816,6 +843,24 @@ final class HomeFeedTests: XCTestCase {
         XCTAssertThrowsError(try awaitValue(failingProvider.fetchHomeConfiguration()))
     }
 
+    func testMockNetworkingProviderLoadsFixtureFilesFromExplicitPaths() throws {
+        let provider = try MockHomeFeedNetworkingProvider(
+            bundleConfiguration: HomeFeedMockDataSourceConfiguration(
+                configFileName: fixtureURL(name: "MockHomeFeedConfig.json").path,
+                sectionFileName: fixtureURL(name: "MockSectionResponse.json").path,
+                configDelay: 0.01,
+                sectionDelay: 0.01
+            )
+        )
+
+        let config = try awaitValue(provider.fetchHomeConfiguration())
+        XCTAssertFalse(config.sections.isEmpty)
+
+        let firstSection = try XCTUnwrap(config.sections.first)
+        let sectionData = try awaitValue(provider.fetchSectionData(for: firstSection))
+        XCTAssertFalse(sectionData.items.isEmpty)
+    }
+
     func testMockSectionDataParserSupportsDataWrapperFormat() throws {
         let data = try Data(contentsOf: URL(fileURLWithPath: "/Users/ashishrai/Desktop/Projects/Personal Frameworks/HomeFeed/HomeFeed/Mocks/MockSectionResponse.json"))
         let parsed = try MockSectionDataParser.parse(data: data)
@@ -909,9 +954,9 @@ final class HomeFeedTests: XCTestCase {
 
         XCTAssertEqual(conference.contentType, .conference)
         XCTAssertEqual(conference.id, "/en/conferences/emea/human-resource-uk")
-        XCTAssertEqual(conference.eventStartDate, "2024-09-17")
+        XCTAssertEqual(conference.eventStartDate, "17 September 2024")
         XCTAssertEqual(conference.eventLocation, "Sydney, Australia")
-        XCTAssertEqual(conference.statusText, "Registered")
+        XCTAssertEqual(conference.statusText, "Upcoming")
         XCTAssertEqual(conference.primaryAction?.title, "Build Agenda")
         XCTAssertEqual(conference.secondaryAction?.title, "See Highlights")
     }
@@ -1016,6 +1061,59 @@ final class HomeFeedTests: XCTestCase {
         XCTAssertEqual(updatedCallbackCount, 1)
     }
 
+    func testViewModelEmitsCardTapCallback() {
+        let provider = RecordingMockProvider(
+            config: .failure(TestFailure.sectionFailed),
+            sectionData: [:]
+        )
+
+        let section = SectionMeta(
+            id: "tap-section",
+            originalOrder: 0,
+            rank: 1,
+            sectionType: "tap_section",
+            endpoint: "/tap",
+            supportedContents: [.document],
+            showSection: true,
+            groupCount: nil,
+            cardCount: 1,
+            containers: [
+                ContainerMeta(
+                    layout: .verticalList,
+                    cardType: .compactHeight,
+                    scrollDirection: .vertical,
+                    showImage: true,
+                    cardCount: 1,
+                    imagePaginationEnabled: false
+                )
+            ],
+            behaviour: nil,
+            declaredParameters: [],
+            unknownParameters: []
+        )
+        let item = FeedItem(id: "tap-item", contentType: .document, title: "Tap Item")
+
+        var tappedSectionID: String?
+        var tappedItemID: String?
+
+        let viewModel = HomeFeedViewModel(
+            networkingProvider: provider,
+            capabilities: .default,
+            callbacks: HomeFeedCallbacks(
+                onCardTapped: { section, item in
+                    tappedSectionID = section.id
+                    tappedItemID = item.id
+                }
+            ),
+            persistenceMode: .inMemoryOnly
+        )
+
+        viewModel.handleCardTap(item, in: section)
+
+        XCTAssertEqual(tappedSectionID, "tap-section")
+        XCTAssertEqual(tappedItemID, "tap-item")
+    }
+
     func testViewModelEmitsNetworkingErrorForConfigFailure() {
         let provider = RecordingMockProvider(
             config: .failure(TestFailure.sectionFailed),
@@ -1118,6 +1216,446 @@ final class HomeFeedTests: XCTestCase {
         wait(for: [loadingDone], timeout: 2.0)
     }
 
+    func testHomeFeedSectionResponseParserDelegatesToMockParser() throws {
+        let data = try Data(contentsOf: fixtureURL(name: "MockSectionResponse.json"))
+        let parsed = try HomeFeedSectionResponseParser.parse(data: data)
+
+        XCTAssertFalse(parsed.isEmpty)
+        XCTAssertNotNil(parsed["last_activity"])
+    }
+
+    func testSystemDesignAndReusableViewsCoverageHarness() {
+        let typographyTokens: [SystemDesign.Typography] = [
+            .sectionTitle,
+            .cardTitle,
+            .cardDescription,
+            .cardContentType,
+            .location,
+            .caption,
+            .primaryButton,
+            .secondaryButton,
+            .dateMonth,
+            .dateDay
+        ]
+
+        for token in typographyTokens {
+            _ = SystemDesign.font(token)
+            _ = SystemDesign.lineSpacing(token)
+            _ = SystemDesign.color(token)
+            _ = token.foregroundColor
+        }
+
+        let paletteTokens: [SystemDesign.Palette] = [
+            .surface,
+            .border,
+            .mutedText,
+            .imagePlaceholder,
+            .statusBackground
+        ]
+
+        for token in paletteTokens {
+            _ = SystemDesign.color(token)
+        }
+
+        _ = SystemDesign.color(hex: "#FF0000", fallback: .clear)
+        _ = SystemDesign.color(hex: "00FF00FF", fallback: .clear)
+        _ = SystemDesign.color(hex: "invalid", fallback: .blue)
+        _ = SystemDesign.buttonForegroundColor
+        _ = SystemDesign.buttonSize
+        _ = SystemDesign.registeredButtonColor
+
+        let allContentTypes: [ContentType] = [
+            .document,
+            .onDemandWebinar,
+            .upcomingWebinar,
+            .video,
+            .podcast,
+            .inquiry,
+            .conference,
+            .audio
+        ]
+
+        for contentType in allContentTypes {
+            _ = SystemDesign.accent(for: contentType)
+            touchBody(ContentLabel(contentType: contentType))
+        }
+
+        let integration = HomeFeedImageIntegration(
+            requestBuilder: { URLRequest(url: $0) },
+            userScopeId: { "coverage-user" },
+            cachePolicyResolver: { _ in .cacheDisabled(allowMemoryCache: true) }
+        )
+        let imageURL = URL(string: "https://example.com/image.png")!
+
+        _ = integration.requestBuilder(imageURL)
+        XCTAssertEqual(integration.userScopeId(), "coverage-user")
+        XCTAssertEqual(integration.cachePolicyResolver(imageURL), .cacheDisabled(allowMemoryCache: true))
+
+        var environment = EnvironmentValues()
+        XCTAssertNil(environment.homeFeedImageIntegration)
+        environment.homeFeedImageIntegration = integration
+        XCTAssertNotNil(environment.homeFeedImageIntegration)
+        _ = Text("Image").homeFeedImageIntegration(integration)
+
+        touchBody(home_feed_managed_image_content_view(urls: [imageURL], integration: integration, accent: .red))
+        touchBody(home_feed_remote_image_fallback_view(url: imageURL, accent: .blue))
+        touchBody(home_feed_remote_image_fallback_view(url: nil, accent: .blue))
+        touchBody(home_feed_remote_image_placeholder_view(accent: .green))
+        touchBody(CompactHeightDocumentImageView(item: content_card_preview_item.document, showRadius: false))
+
+        let parsedDate = home_feed_parse_date("24 February 2026")
+        XCTAssertNotNil(parsedDate)
+        touchBody(CalendarView(startDate: parsedDate, endDate: nil))
+        touchBody(CalendarView(startDate: nil, endDate: parsedDate).calendarView)
+        _ = CalendarView_Previews.previews
+
+        ListenHandler().listenContent()
+        PlayHandler().playContent()
+        SaveHandler().saveContent()
+        touchBody(ListenButtonView(handler: TrackingListenHandler()))
+        touchBody(PlayButtonView(handler: TrackingPlayHandler()))
+        touchBody(SaveButton(handler: TrackingSaveHandler()))
+        touchBody(RegisteredButtonView(buttonText: "Scheduled"))
+        touchBody(FullTextButtonView(buttonText: "View Schedule"))
+        touchBody(PublishedDateLabelView(dateText: "08 April 2025"))
+        _ = ListenButtonView_Previews.previews
+        _ = PlayButtonView_Previews.previews
+        _ = SaveButton_Previews.previews
+    }
+
+    func testCardViewsCoverageHarness() {
+        let horizontalCompactHeight = ContainerMeta(
+            layout: .horizontalList,
+            cardType: .compactHeight,
+            scrollDirection: .horizontal,
+            showImage: true,
+            cardCount: 3,
+            imagePaginationEnabled: false
+        )
+        let gridCompactWidth = ContainerMeta(
+            layout: .grid,
+            cardType: .compactWidth,
+            scrollDirection: .vertical,
+            showImage: true,
+            cardCount: 4,
+            columns: 2,
+            imagePaginationEnabled: true
+        )
+        let verticalInsight = ContainerMeta(
+            layout: .verticalList,
+            cardType: .insight,
+            scrollDirection: .vertical,
+            showImage: false,
+            cardCount: 2,
+            imagePaginationEnabled: false
+        )
+        let topThumbnailContainer = ContainerMeta(
+            layout: .verticalList,
+            cardType: .topThumbnail,
+            scrollDirection: .vertical,
+            showImage: true,
+            cardCount: 1,
+            imagePaginationEnabled: false
+        )
+
+        let mediaItems: [FeedItem] = [
+            content_card_preview_item.document,
+            content_card_preview_item.on_demand_webinar,
+            content_card_preview_item.video,
+            content_card_preview_item.podcast
+        ]
+        let eventItems: [FeedItem] = [
+            content_card_preview_item.upcoming_webinar,
+            content_card_preview_item.inquiry,
+            content_card_preview_item.conference
+        ]
+
+        touchBody(CompactHeightDocumentView(item: content_card_preview_item.document, container: horizontalCompactHeight))
+        touchBody(CompactWidthDocumentView(item: content_card_preview_item.document, container: gridCompactWidth))
+        touchBody(TopThumbnailDocumentView(item: content_card_preview_item.document, container: topThumbnailContainer))
+        touchBody(InsightDocumentView(item: content_card_preview_item.document, container: verticalInsight))
+        touchBody(CompactHeightOnDemandWebinarView(item: content_card_preview_item.on_demand_webinar, container: horizontalCompactHeight))
+        touchBody(CompactWidthOnDemandWebinarView(item: content_card_preview_item.on_demand_webinar, container: gridCompactWidth))
+        touchBody(TopThumbnailOnDemandWebinarView(item: content_card_preview_item.on_demand_webinar, container: topThumbnailContainer))
+        touchBody(InsightOnDemandWebinarView(item: content_card_preview_item.on_demand_webinar, container: verticalInsight))
+        touchBody(CompactHeightUpcomingWebinarView(item: content_card_preview_item.upcoming_webinar, container: horizontalCompactHeight))
+        touchBody(CompactWidthUpcomingWebinarView(item: content_card_preview_item.upcoming_webinar, container: gridCompactWidth))
+        touchBody(TopThumbnailUpcomingWebinarView(item: content_card_preview_item.upcoming_webinar, container: topThumbnailContainer))
+        touchBody(InsightUpcomingWebinarView(item: content_card_preview_item.upcoming_webinar, container: verticalInsight))
+        touchBody(CompactHeightVideoView(item: content_card_preview_item.video, container: horizontalCompactHeight))
+        touchBody(CompactWidthVideoView(item: content_card_preview_item.video, container: gridCompactWidth))
+        touchBody(TopThumbnailVideoView(item: content_card_preview_item.video, container: topThumbnailContainer))
+        touchBody(InsightVideoView(item: content_card_preview_item.video, container: verticalInsight))
+        touchBody(CompactHeightPodcastView(item: content_card_preview_item.podcast, container: horizontalCompactHeight))
+        touchBody(CompactWidthPodcastView(item: content_card_preview_item.podcast, container: gridCompactWidth))
+        touchBody(TopThumbnailPodcastView(item: content_card_preview_item.podcast, container: topThumbnailContainer))
+        touchBody(InsightPodcastView(item: content_card_preview_item.podcast, container: verticalInsight))
+        touchBody(CompactHeightInquiryView(item: content_card_preview_item.inquiry, container: horizontalCompactHeight))
+        touchBody(CompactWidthInquiryView(item: content_card_preview_item.inquiry, container: gridCompactWidth))
+        touchBody(TopThumbnailInquiryView(item: content_card_preview_item.inquiry, container: topThumbnailContainer))
+        touchBody(InsightInquiryView(item: content_card_preview_item.inquiry, container: verticalInsight))
+        touchBody(CompactHeightConferenceView(item: content_card_preview_item.conference, container: horizontalCompactHeight))
+        touchBody(CompactWidthConferenceView(item: content_card_preview_item.conference, container: gridCompactWidth))
+        touchBody(TopThumbnailConferenceView(item: content_card_preview_item.conference, container: topThumbnailContainer))
+        touchBody(InsightConferenceView(item: content_card_preview_item.conference, container: verticalInsight))
+
+        _ = CompactHeightDocumentView_Previews.previews
+        _ = CompactWidthDocumentView_Previews.previews
+        _ = TopThumbnailDocumentView_Previews.previews
+        _ = InsightDocumentView_Previews.previews
+        _ = CompactHeightOnDemandWebinarView_Previews.previews
+        _ = CompactWidthOnDemandWebinarView_Previews.previews
+        _ = TopThumbnailOnDemandWebinarView_Previews.previews
+        _ = InsightOnDemandWebinarView_Previews.previews
+        _ = CompactHeightUpcomingWebinarView_Previews.previews
+        _ = CompactWidthUpcomingWebinarView_Previews.previews
+        _ = TopThumbnailUpcomingWebinarView_Previews.previews
+        _ = InsightUpcomingWebinarView_Previews.previews
+        _ = CompactHeightVideoView_Previews.previews
+        _ = CompactWidthVideoView_Previews.previews
+        _ = TopThumbnailVideoView_Previews.previews
+        _ = InsightVideoView_Previews.previews
+        _ = CompactHeightPodcastView_Previews.previews
+        _ = CompactWidthPodcastView_Previews.previews
+        _ = TopThumbnailPodcastView_Previews.previews
+        _ = InsightPodcastView_Previews.previews
+        _ = CompactHeightInquiryView_Previews.previews
+        _ = CompactWidthInquiryView_Previews.previews
+        _ = TopThumbnailInquiryView_Previews.previews
+        _ = InsightInquiryView_Previews.previews
+        _ = CompactHeightConferenceView_Previews.previews
+        _ = CompactWidthConferenceView_Previews.previews
+        _ = TopThumbnailConferenceView_Previews.previews
+        _ = InsightConferenceView_Previews.previews
+
+        for cardType in [CardType.compactHeight, .compactWidth, .topThumbnail, .insight] {
+            for item in mediaItems + eventItems {
+                touchBody(card_type_content_type_view(cardType: cardType, item: item, container: horizontalCompactHeight))
+            }
+        }
+
+        for cardType in [CardType.compactHeight, .compactWidth, .topThumbnail, .insight] {
+            for item in mediaItems {
+                touchBody(home_feed_media_card_view(item: item, cardType: cardType, container: gridCompactWidth))
+            }
+            for item in eventItems {
+                touchBody(home_feed_event_card_view(item: item, cardType: cardType, container: verticalInsight))
+            }
+        }
+
+        let imageHeavyDocument = FeedItem(
+            id: "doc-gallery",
+            contentType: .document,
+            title: "Gallery Doc",
+            behaviour: FeedItemBehaviour(
+                summary: "Summary",
+                media: FeedItemMedia(
+                    imageURL: "https://example.com/one.png",
+                    imageURLs: [
+                        "https://example.com/one.png",
+                        "https://example.com/two.png"
+                    ],
+                    showImage: true,
+                    multipleImageSupport: true
+                ),
+                schedule: FeedItemSchedule(publishedDate: "24 February 2026"),
+                primaryAction: FeedItemAction(title: "Read")
+            )
+        )
+
+        let context = home_feed_card_context(item: imageHeavyDocument, cardType: .compactWidth, container: gridCompactWidth)
+        _ = context.accent
+        XCTAssertTrue(context.shouldShowImage)
+        XCTAssertTrue(context.hasImage)
+        XCTAssertEqual(context.primaryMetaText, "24 February 2026")
+        XCTAssertNil(context.preferredWidth)
+        XCTAssertEqual(context.accessibilityID, "COMPACT_WIDTH_DOCUMENT")
+
+        let horizontalContext = home_feed_card_context(
+            item: content_card_preview_item.conference,
+            cardType: .insight,
+            container: ContainerMeta(
+                layout: .horizontalList,
+                cardType: .insight,
+                scrollDirection: .horizontal,
+                showImage: false,
+                cardCount: 1,
+                imagePaginationEnabled: false
+            )
+        )
+        XCTAssertEqual(horizontalContext.preferredWidth, 315)
+
+        touchBody(home_feed_card_chrome(
+            accent: .orange,
+            minHeight: 120,
+            preferredWidth: 200,
+            accessibilityID: "coverage-card"
+        ) {
+            Text("Card")
+        })
+        touchBody(home_feed_media_copy_block_view(
+            item: imageHeavyDocument,
+            showsSummary: true,
+            titleLineLimit: 3,
+            summaryLineLimit: 2
+        ))
+        touchBody(home_feed_media_copy_block_view(
+            item: imageHeavyDocument,
+            showsSummary: false,
+            titleLineLimit: 1,
+            summaryLineLimit: 0
+        ))
+        touchBody(home_feed_media_image_container_view(
+            item: imageHeavyDocument,
+            container: gridCompactWidth,
+            height: 94,
+            width: nil,
+            showRadius: true
+        ))
+        touchBody(home_feed_gallery_indicator_view())
+        touchBody(home_feed_media_action_bar_view(item: content_card_preview_item.document))
+        touchBody(home_feed_media_action_bar_view(item: content_card_preview_item.video))
+        touchBody(home_feed_calendar_badge_view(item: content_card_preview_item.upcoming_webinar, size: 70))
+        touchBody(home_feed_event_copy_block_view(
+            item: content_card_preview_item.conference,
+            showsSummary: true,
+            titleLineLimit: 3,
+            metaLineLimit: 2
+        ))
+        touchBody(home_feed_event_copy_block_view(
+            item: content_card_preview_item.inquiry,
+            showsSummary: false,
+            titleLineLimit: 2,
+            metaLineLimit: 1
+        ))
+        touchBody(home_feed_meta_text_view(text: "Sydney, Australia", lineLimit: 2))
+        touchBody(home_feed_event_action_bar_view(item: content_card_preview_item.inquiry, vertical: true))
+        touchBody(home_feed_event_action_bar_view(item: content_card_preview_item.conference, vertical: false))
+
+        let noActionItem = FeedItem(id: "na", contentType: .conference, title: "No Action")
+        touchBody(home_feed_event_action_bar_view(item: noActionItem, vertical: false))
+
+        XCTAssertNotNil(home_feed_parse_date("24 February 2026"))
+        XCTAssertNotNil(home_feed_parse_date("2024-09-17"))
+        XCTAssertNotNil(home_feed_parse_date("Sep 17, 2024"))
+        XCTAssertNil(home_feed_parse_date("not-a-date"))
+    }
+
+    func testHomeFeedSectionViewsAndPreviewCoverageHarness() throws {
+        let previewLoading = feed_section_state_preview_fixture.loading
+        let previewLoadedMedia = feed_section_state_preview_fixture.loadedMedia
+        let previewLoadedEvent = feed_section_state_preview_fixture.loadedEvent
+        let previewFailed = feed_section_state_preview_fixture.failed
+        let previewSkipped = feed_section_state_preview_fixture.skipped
+
+        touchBody(feed_section_state_preview_case_view(
+            title: "Loading",
+            note: "Coverage",
+            section: previewLoading
+        ))
+        touchBody(feed_section_state_preview_case_view(
+            title: "Loaded",
+            note: nil,
+            section: previewLoadedMedia
+        ))
+        _ = FeedSectionStateCases_Previews.previews
+
+        let meta = previewLoadedMedia.meta
+        let data = try XCTUnwrap({
+            if case let .loaded(sectionData) = previewLoadedMedia.state {
+                return sectionData
+            }
+            return nil
+        }())
+
+        let viewModel = HomeFeedViewModel(
+            networkingProvider: RecordingMockProvider(
+                config: .success(HomeConfig(sections: [meta])),
+                sectionData: [meta.sectionType: .success(data)]
+            ),
+            capabilities: .default,
+            persistenceMode: .inMemoryOnly
+        )
+        let done = expectation(description: "coverage home feed load")
+        observeLoadingCompletion(viewModel: viewModel, done: done)
+        viewModel.load()
+        wait(for: [done], timeout: 2.0)
+
+        touchBody(HomeFeedView(viewModel: viewModel, showsSkippedDebug: true))
+        touchBody(section_view(section: previewLoading))
+        touchBody(section_view(section: previewLoadedMedia))
+        touchBody(section_view(section: previewFailed))
+        touchBody(section_view(section: previewSkipped))
+        touchBody(loading_section_content_view(meta: meta))
+        touchBody(failed_section_content_view(message: "Unable to load"))
+        touchBody(loaded_section_content_view(meta: meta, data: data))
+        touchBody(section_chrome_view(meta: meta) {
+            Text("Content")
+        })
+        touchBody(section_header_row_view(meta: meta))
+        if let cta = meta.sectionHeaderCta {
+            touchBody(section_cta_label_view(cta: cta))
+        }
+        if let footer = previewLoadedEvent.meta.preferredFooterCta {
+            touchBody(section_cta_label_view(cta: footer))
+        }
+        touchBody(section_background_fill_view(meta: meta))
+        touchBody(section_background_fill_view(meta: previewLoadedEvent.meta))
+
+        let horizontal = try XCTUnwrap(meta.containers.first)
+        let vertical = try XCTUnwrap(previewLoadedEvent.meta.containers.first)
+        let grid = ContainerMeta(
+            layout: .grid,
+            cardType: .compactWidth,
+            scrollDirection: .vertical,
+            showImage: true,
+            cardCount: 4,
+            columns: 2,
+            imagePaginationEnabled: false
+        )
+
+        touchBody(loading_container_list_view(container: horizontal, placeholderCount: 2))
+        touchBody(loading_container_list_view(container: vertical, placeholderCount: 2))
+        touchBody(loading_container_list_view(container: grid, placeholderCount: 2))
+        touchBody(container_list_view(meta: meta, container: horizontal, items: data.items))
+        touchBody(container_list_view(meta: previewLoadedEvent.meta, container: vertical, items: try XCTUnwrap({
+            if case let .loaded(sectionData) = previewLoadedEvent.state {
+                return sectionData.items
+            }
+            return nil
+        }())))
+        touchBody(container_list_view(meta: meta, container: grid, items: data.items))
+        touchBody(loading_card_placeholder_view(container: horizontal))
+        touchBody(loading_card_placeholder_view(container: vertical))
+        touchBody(loading_card_placeholder_view(container: grid))
+        touchBody(FeedSectionStatePreviewView(section: previewLoadedMedia))
+        touchBody(FeedSectionStatePreviewView(section: previewSkipped))
+
+        let metricsCompactHeight = loading_card_metrics(container: horizontal)
+        let metricsCompactWidth = loading_card_metrics(container: grid)
+        let metricsTopThumbnail = loading_card_metrics(container: ContainerMeta(
+            layout: .verticalList,
+            cardType: .topThumbnail,
+            scrollDirection: .vertical,
+            showImage: true,
+            cardCount: 1,
+            imagePaginationEnabled: false
+        ))
+        let metricsInsight = loading_card_metrics(container: ContainerMeta(
+            layout: .verticalList,
+            cardType: .insight,
+            scrollDirection: .vertical,
+            showImage: false,
+            cardCount: 1,
+            imagePaginationEnabled: false
+        ))
+
+        XCTAssertEqual(metricsCompactHeight.width, SystemDesign.CardMetrics.compactHeightWidth)
+        XCTAssertNil(metricsCompactWidth.width)
+        XCTAssertEqual(metricsTopThumbnail.minHeight, SystemDesign.CardMetrics.topThumbnailMinHeight)
+        XCTAssertEqual(metricsInsight.minHeight, SystemDesign.CardMetrics.insightMinHeight)
+    }
+
     func testRepositoryFactoryFallsBackToInMemoryForIOS16Runtime() {
         let store = HomeFeedRepositoryFactory.makeStoreDataSource(
             persistenceMode: .automatic,
@@ -1143,20 +1681,14 @@ final class HomeFeedTests: XCTestCase {
             sectionType: "cached_section",
             title: "Cached item"
         )
-        let refreshedSection = makeSectionState(
-            id: "fresh",
-            rank: 1,
-            sectionType: "fresh_section",
-            title: "Fresh item"
-        )
 
         let store = InMemoryHomeFeedStoreDataSource(initialSections: [cachedSection])
-        let config = HomeConfig(sections: [refreshedSection.meta])
+        let config = HomeConfig(sections: [cachedSection.meta])
         let provider = RecordingMockProvider(
             config: .success(config),
-            sectionData: ["fresh_section": .success(SectionData(items: [FeedItem(id: "fresh_item", contentType: .video, title: "Fresh item")]))],
+            sectionData: ["cached_section": .success(SectionData(items: [FeedItem(id: "fresh_item", contentType: .video, title: "Fresh item")]))],
             delay: 0.2,
-            configDelay: 0.1
+            configDelay: 0.05
         )
 
         let repository = HomeFeedRepositoryImpl(
@@ -1175,6 +1707,7 @@ final class HomeFeedTests: XCTestCase {
         )
 
         XCTAssertEqual(viewModel.sections.first?.meta.sectionType, "cached_section")
+        XCTAssertEqual(firstLoadedItemTitle(in: viewModel.sections.first), "Cached item")
 
         let done = expectation(description: "refresh complete")
         observeLoadingCompletion(viewModel: viewModel, done: done)
@@ -1182,9 +1715,54 @@ final class HomeFeedTests: XCTestCase {
 
         XCTAssertEqual(viewModel.sections.first?.meta.sectionType, "cached_section")
         XCTAssertTrue(viewModel.isLoading)
+        XCTAssertEqual(firstLoadedItemTitle(in: viewModel.sections.first), "Cached item")
+
+        RunLoop.main.run(until: Date().addingTimeInterval(0.1))
+        XCTAssertEqual(viewModel.sections.first?.meta.sectionType, "cached_section")
+        XCTAssertEqual(firstLoadedItemTitle(in: viewModel.sections.first), "Cached item")
 
         wait(for: [done], timeout: 3.0)
-        XCTAssertEqual(viewModel.sections.first?.meta.sectionType, "fresh_section")
+        XCTAssertEqual(viewModel.sections.first?.meta.sectionType, "cached_section")
+        XCTAssertEqual(firstLoadedItemTitle(in: viewModel.sections.first), "Fresh item")
+    }
+
+    func testBackgroundRefreshFailureKeepsCachedLoadedSectionVisible() {
+        let cachedSection = makeSectionState(
+            id: "cached",
+            rank: 1,
+            sectionType: "cached_section",
+            title: "Cached item"
+        )
+
+        let store = InMemoryHomeFeedStoreDataSource(initialSections: [cachedSection])
+        let config = HomeConfig(sections: [cachedSection.meta])
+        let provider = RecordingMockProvider(
+            config: .success(config),
+            sectionData: ["cached_section": .failure(TestFailure.sectionFailed)]
+        )
+
+        let repository = HomeFeedRepositoryImpl(
+            remoteDataSource: NetworkingHomeFeedRemoteDataSource(provider: provider),
+            storeDataSource: store,
+            capabilities: .default,
+            chunkSize: 2
+        )
+
+        let viewModel = HomeFeedViewModel(
+            observeSectionsUseCase: ObserveHomeFeedSectionsUseCase(repository: repository),
+            observeSkippedSectionsUseCase: ObserveHomeFeedSkippedSectionsUseCase(repository: repository),
+            observeEventsUseCase: ObserveHomeFeedEventsUseCase(repository: repository),
+            refreshHomeFeedUseCase: RefreshHomeFeedUseCase(repository: repository),
+            triggerSectionBehaviourUseCase: TriggerSectionBehaviourUseCase(repository: repository)
+        )
+
+        let done = expectation(description: "refresh complete")
+        observeLoadingCompletion(viewModel: viewModel, done: done)
+        viewModel.load()
+
+        wait(for: [done], timeout: 2.0)
+        XCTAssertEqual(viewModel.sections.first?.meta.sectionType, "cached_section")
+        XCTAssertEqual(firstLoadedItemTitle(in: viewModel.sections.first), "Cached item")
     }
 
     func testViewModelReflectsStoreChangesWithoutManualRefresh() {
@@ -1230,6 +1808,19 @@ final class HomeFeedTests: XCTestCase {
         XCTAssertEqual(reloadStore.currentSections().first?.state, section.state)
     }
 #endif
+
+    private func touchBody<V: View>(_ view: V, depth: Int = 6) {
+        guard depth > 0 else {
+            return
+        }
+
+        if V.Body.self == Never.self {
+            return
+        }
+
+        let nested = view.body
+        touchBody(nested, depth: depth - 1)
+    }
 
     private func observeLoadingCompletion(viewModel: HomeFeedViewModel, done: XCTestExpectation) {
         viewModel.$isLoading
@@ -1327,6 +1918,18 @@ final class HomeFeedTests: XCTestCase {
             state: .loaded(SectionData(items: [FeedItem(id: "\(id)_item", contentType: .video, title: title)]))
         )
     }
+
+    private func firstLoadedItemTitle(in section: FeedSectionState?) -> String? {
+        guard let section else {
+            return nil
+        }
+
+        guard case let .loaded(data) = section.state else {
+            return nil
+        }
+
+        return data.items.first?.title
+    }
 }
 
 private enum TestFailure: Error {
@@ -1335,6 +1938,18 @@ private enum TestFailure: Error {
 
 private struct StubRuntime: HomeFeedRuntime {
     let isSwiftDataSupported: Bool
+}
+
+private final class TrackingListenHandler: ListenButtonHandler {
+    func listenContent() {}
+}
+
+private final class TrackingPlayHandler: PlayButtonHandler {
+    func playContent() {}
+}
+
+private final class TrackingSaveHandler: SaveButtonHandler {
+    func saveContent() {}
 }
 
 private final class RecordingMockProvider: HomeFeedNetworkingProvider {

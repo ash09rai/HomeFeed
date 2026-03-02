@@ -14,6 +14,7 @@ struct InsightOnDemandWebinarView: View {
     }
 }
 
+#if DEBUG
 struct InsightOnDemandWebinarView_Previews: PreviewProvider {
     static var previews: some View {
         InsightOnDemandWebinarView(item: content_card_preview_item.on_demand_webinar)
@@ -21,3 +22,4 @@ struct InsightOnDemandWebinarView_Previews: PreviewProvider {
             .previewLayout(.sizeThatFits)
     }
 }
+#endif

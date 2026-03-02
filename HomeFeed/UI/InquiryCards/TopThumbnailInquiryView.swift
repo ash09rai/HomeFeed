@@ -14,6 +14,7 @@ struct TopThumbnailInquiryView: View {
     }
 }
 
+#if DEBUG
 struct TopThumbnailInquiryView_Previews: PreviewProvider {
     static var previews: some View {
         TopThumbnailInquiryView(item: content_card_preview_item.inquiry)
@@ -21,3 +22,4 @@ struct TopThumbnailInquiryView_Previews: PreviewProvider {
             .previewLayout(.sizeThatFits)
     }
 }
+#endif

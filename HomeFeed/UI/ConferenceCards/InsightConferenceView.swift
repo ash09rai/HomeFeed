@@ -14,6 +14,7 @@ struct InsightConferenceView: View {
     }
 }
 
+#if DEBUG
 struct InsightConferenceView_Previews: PreviewProvider {
     static var previews: some View {
         InsightConferenceView(item: content_card_preview_item.conference)
@@ -21,3 +22,4 @@ struct InsightConferenceView_Previews: PreviewProvider {
             .previewLayout(.sizeThatFits)
     }
 }
+#endif

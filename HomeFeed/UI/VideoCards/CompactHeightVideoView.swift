@@ -14,6 +14,7 @@ struct CompactHeightVideoView: View {
     }
 }
 
+#if DEBUG
 struct CompactHeightVideoView_Previews: PreviewProvider {
     static var previews: some View {
         CompactHeightVideoView(item: content_card_preview_item.video)
@@ -21,3 +22,4 @@ struct CompactHeightVideoView_Previews: PreviewProvider {
             .previewLayout(.sizeThatFits)
     }
 }
+#endif

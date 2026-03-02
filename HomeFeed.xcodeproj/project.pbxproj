@@ -30,6 +30,8 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
+				Mocks/MockHomeFeedConfig.json,
+				Mocks/MockSectionResponse.json,
 			);
 			target = 394536EF2F505C5A003DD14D /* HomeFeed */;
 		};

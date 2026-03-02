@@ -1,7 +1,7 @@
 #if DEBUG
 import SwiftUI
 
-private struct feed_section_state_preview_case_view: View {
+struct feed_section_state_preview_case_view: View {
     let title: String
     let note: String?
     let section: FeedSectionState
@@ -25,7 +25,7 @@ private struct feed_section_state_preview_case_view: View {
     }
 }
 
-private enum feed_section_state_preview_fixture {
+enum feed_section_state_preview_fixture {
     static let loading = FeedSectionState(
         meta: lastActivityMeta,
         state: .loading
